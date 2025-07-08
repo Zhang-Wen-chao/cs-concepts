@@ -1,0 +1,7 @@
+# 忽略 TensorFlow 目录下的数据集
+TensorFlow/Keras机器学习基础知识/aclImdb_v1/
+TensorFlow/Keras机器学习基础知识/aclImdb_v1_archive
+TensorFlow/Keras机器学习基础知识/training_1
+TensorFlow/Keras机器学习基础知识/training_2
+TensorFlow/Keras机器学习基础知识/my_dir
+
