@@ -5,3 +5,9 @@ TensorFlow/Keras机器学习基础知识/training_1
 TensorFlow/Keras机器学习基础知识/training_2
 TensorFlow/Keras机器学习基础知识/my_dir
 
+TensorFlow/加载和预处理数据/ted_hrlr_translate_pt_en_converter
+TensorFlow/加载和预处理数据/en_vocab.txt
+TensorFlow/加载和预处理数据/pt_vocab.txt
+TensorFlow/加载和预处理数据/ted_hrlr_translate_pt_en_converter.zip
+
+TensorFlow/分布式训练/training_checkpoints
