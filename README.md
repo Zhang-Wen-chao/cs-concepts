@@ -94,14 +94,28 @@ cs-concepts/
   - 哈希表
   - 树与图
 
+### 已完成
+- ✅ **算法基础** (2025-10)
+  - 复杂度分析
+  - 排序与搜索
+  - 递归
+  - 动态规划
+
+### 已完成
+- ✅ **操作系统** (2025-10)
+  - 进程与线程
+  - 进程同步与互斥
+  - 内存管理
+  - 文件系统
+  - I/O系统
+
 ### 进行中
-- 🔄 **算法基础** (2025-10 - )
-  - ✅ 复杂度分析
-  - 排序与搜索 ← 当前
+- 🔄 **计算机网络** (2025-10 - )
+  - 网络基础与分层模型 ← 当前
 
 ### 待学习
-- ⏭️ 操作系统
-- ⏭️ 计算机网络
+- ⏭️ 计算机体系结构
+- ⏭️ 数据库
 
 ## 🤔 待深入理解的概念
 
@@ -152,6 +166,41 @@ cs-concepts/
 - [ ] **LeetCode 743** - 网络延迟时间：Dijkstra最短路径
 
 参考：`fundamentals/data-structures/trees-graphs.md`
+
+### 排序与搜索必做题
+- [ ] **LeetCode 704** - 二分查找：基础二分搜索
+- [ ] **LeetCode 34** - 查找第一个和最后一个位置：二分查找边界
+- [ ] **LeetCode 153** - 旋转数组最小值：二分搜索变体
+- [ ] **LeetCode 912** - 排序数组：实现各种排序算法
+- [ ] **LeetCode 347** - 前K个高频元素：Top K问题（堆/快速选择）
+- [ ] **LeetCode 215** - 数组中的第K个最大元素：快速选择O(n)
+- [ ] **LeetCode 88** - 合并两个有序数组：归并思想
+
+参考：`fundamentals/algorithms/sorting-searching.md`
+
+### 递归必做题
+- [ ] **LeetCode 509** - 斐波那契数：递归基础+记忆化
+- [ ] **LeetCode 344** - 反转字符串：递归实现
+- [ ] **LeetCode 206** - 反转链表：递归vs迭代
+- [ ] **LeetCode 50** - Pow(x,n)：快速幂递归
+- [ ] **LeetCode 46** - 全排列：回溯算法
+- [ ] **LeetCode 78** - 子集：回溯生成所有子集
+- [ ] **LeetCode 51** - N皇后：经典回溯问题
+- [ ] **LeetCode 22** - 括号生成：回溯+剪枝
+
+参考：`fundamentals/algorithms/recursion.md`
+
+### 动态规划必做题
+- [ ] **LeetCode 70** - 爬楼梯：DP入门题
+- [ ] **LeetCode 198** - 打家劫舍：状态转移经典题
+- [ ] **LeetCode 53** - 最大子数组和：Kadane算法
+- [ ] **LeetCode 322** - 零钱兑换：完全背包问题
+- [ ] **LeetCode 300** - 最长递增子序列：经典DP O(n²)
+- [ ] **LeetCode 1143** - 最长公共子序列：二维DP
+- [ ] **LeetCode 72** - 编辑距离：困难但经典
+- [ ] **LeetCode 64** - 最小路径和：二维DP入门
+
+参考：`fundamentals/algorithms/dynamic-programming.md`
 
 ---
 
