@@ -26,7 +26,8 @@ cs-concepts/
 │   ├── computer-architecture/ # 计算机体系结构
 │   ├── operating-systems/     # 操作系统
 │   ├── networks/             # 网络
-│   └── databases/            # 数据库
+│   ├── databases/            # 数据库
+│   └── cuda/                 # CUDA 并行计算
 │
 ├── theory/               # 🧠 理论基础
 │   ├── computation-theory/   # 计算理论
@@ -35,13 +36,18 @@ cs-concepts/
 │
 ├── software-engineering/ # 🏗️ 软件工程概念
 │   ├── design-patterns/      # 设计模式
+│   ├── design-patterns-practice/ # 设计模式实践
 │   ├── software-architecture/ # 软件架构
 │   └── programming-methodologies/ # 编程方法论
+│
+├── courses/              # 📚 课程笔记
+│   └── shanghaitech/         # 上海科技大学课程
 │
 ├── languages/            # 💻 编程语言概念
 │   ├── language-theory/     # 语言理论
 │   ├── comparative-languages/ # 语言对比
-│   └── python/             # Python专题
+│   ├── python/             # Python专题
+│   └── cpp/                # C++学习与实践
 │
 └── applications/         # 🚀 应用领域概念
     ├── artificial-intelligence/ # 人工智能
