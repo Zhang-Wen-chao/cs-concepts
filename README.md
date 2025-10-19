@@ -141,8 +141,14 @@ cs-concepts/
 
 ### 进行中
 - 🔄 **理论基础** (2025-10 - )
-  - 计算理论 ← 下一个
-  - 复杂度理论
+  - ✅ 计算理论
+    - ✅ 自动机理论
+    - ✅ 形式语言
+    - ✅ 可计算性理论
+  - 🔄 复杂度理论
+    - ✅ 时间与空间复杂度
+    - NP完全性 ← 下一个
+    - 近似算法
   - 信息论
 
 ## 🤔 待深入理解的概念
@@ -157,7 +163,7 @@ cs-concepts/
 - BLAS 库为何能达到 50 倍性能提升 - `systems/computer-architecture/performance-evaluation.md`
 
 ### 理论知识
--
+- AKS素数测试算法详解（第一个确定性多项式时间素数判定算法）- `theory/complexity-theory/np-completeness.md`
 
 ### 其他
 -
