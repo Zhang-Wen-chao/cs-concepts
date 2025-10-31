@@ -70,6 +70,10 @@ cs-concepts/
 - 大量交叉引用，建立知识网络
 - 避免工具使用细节，专注概念理解
 
+## 🔥 当前优先学习主题
+
+- 深度学习推荐系统：优先梳理召回 / 粗排 / 精排 / 混排的整体链路，目标是快速定位模型推理与 serving 问题 → [深度学习推荐系统学习路径](applications/artificial-intelligence/recommendation-systems/deep-learning-recsys-learning-path.md)
+
 ## 📊 学习进度
 
 > 记录学习历程，见证成长

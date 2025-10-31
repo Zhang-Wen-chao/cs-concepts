@@ -42,6 +42,11 @@
   - [Transformer架构](deep-learning/architectures/transformers.md) - 注意力机制
   - [生成对抗网络](deep-learning/architectures/gans.md) - 生成模型
 
+### [推荐系统](recommendation-systems/)
+结合工程与建模的智能推荐体系
+
+- [深度学习推荐系统学习路径](recommendation-systems/deep-learning-recsys-learning-path.md) - 从双塔入手，系统性掌握深度学习推荐模型
+
 ### [计算机视觉](computer-vision/)
 让机器理解和处理视觉信息
 
