@@ -72,7 +72,15 @@ cs-concepts/
 
 ## 🔥 当前优先学习主题
 
-- 深度学习推荐系统：优先梳理召回 / 粗排 / 精排 / 混排的整体链路，目标是快速定位模型推理与 serving 问题 → [深度学习推荐系统学习路径](applications/artificial-intelligence/recommendation-systems/deep-learning-recsys-learning-path.md)
+- 🔄 **AI/机器学习基础 + 深度学习推荐系统**（开始学习 2025-11-11）
+  - 第一阶段：补充AI/ML基础知识（进行中）✅
+    - ✅ 机器学习核心概念
+    - ✅ 神经网络基础
+    - ✅ 推荐系统基础
+  - 第二阶段：深度学习推荐系统（下一步）
+    - 双塔模型、CTR预估、多任务学习
+    - 目标：快速定位模型推理与 serving 问题
+  - → [深度学习推荐系统学习路径](applications/artificial-intelligence/recommendation-systems/deep-learning-recsys-learning-path.md)
 
 ## 📊 学习进度
 
@@ -149,10 +157,10 @@ cs-concepts/
     - ✅ 自动机理论
     - ✅ 形式语言
     - ✅ 可计算性理论
-  - 🔄 复杂度理论
+  - ✅ 复杂度理论
     - ✅ 时间与空间复杂度
-    - NP完全性 ← 下一个
-    - 近似算法
+    - 📖 NP完全性（已浏览，待深入学习）
+    - 📖 近似算法（已浏览，待深入学习）
   - 信息论
 
 ## 🤔 待深入理解的概念
@@ -168,6 +176,14 @@ cs-concepts/
 
 ### 理论知识
 - AKS素数测试算法详解（第一个确定性多项式时间素数判定算法）- `theory/complexity-theory/np-completeness.md`
+- NP完全性理论深入理解（P vs NP, 归约技术，经典NP完全问题）- `theory/complexity-theory/np-completeness.md`
+- 最大流-最小割定理（Max-Flow Min-Cut Theorem）及其证明
+- 近似算法设计与分析（近似比、PTAS/FPTAS、线性规划舍入）- `theory/complexity-theory/approximation-algorithms.md`
+
+### 感兴趣的主题（未学习）
+- 📌 千禧年问题（Millennium Prize Problems）- 克莱数学研究所的七大数学难题 - `fundamentals/mathematics/millennium-problems.md`
+  - P vs NP 问题（与计算机科学直接相关）
+  - 黎曼猜想、庞加莱猜想等数学问题
 
 ### 其他
 -
