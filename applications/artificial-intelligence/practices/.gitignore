@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb_checkpoints/
+
+# 数据文件（太大，不提交）
+data/
+*.csv
+*.tsv
+*.json
+*.pkl
+*.pickle
+*.h5
+*.hdf5
+
+# 模型文件
+*.pt
+*.pth
+*.ckpt
+*.pb
+saved_model/
+checkpoints/
+models/
+
+# 日志和缓存
+logs/
+*.log
+.cache/
+wandb/
+
+# 临时文件
+*.tmp
+*.bak
+*.swp
+*~
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# macOS
+.DS_Store
+
+# 大文件标记
+*.large
