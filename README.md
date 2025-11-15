@@ -73,25 +73,36 @@ cs-concepts/
 ## 🔥 当前优先学习主题
 
 - 🔄 **AI/机器学习基础 + 深度学习推荐系统**（开始学习 2025-11-11）
-  - 第一阶段：补充AI/ML基础知识（进行中）✅
-    - ✅ 机器学习核心概念
-    - ✅ 神经网络基础
-    - ✅ 推荐系统基础
-  - 第二阶段：深度学习推荐系统（下一步）
-    - 双塔模型、CTR预估、多任务学习
+  - 第一阶段：理论学习（已完成）✅
+    - ✅ [机器学习核心概念](applications/artificial-intelligence/machine-learning/core-concepts.md) - 监督学习、损失函数、梯度下降
+    - 🔄 [神经网络基础](applications/artificial-intelligence/deep-learning/neural-networks.md)
+    - 🔄 [推荐系统基础](applications/artificial-intelligence/recommendation-systems/)
+  - 第一阶段实践：机器学习基础代码实践（已完成）✅
+    - ✅ 01 - 线性回归：从零实现、MSE损失、梯度推导、学习率实验（2025-11-14）
+    - ✅ 02 - 梯度下降：BGD/SGD/Mini-batch 对比、学习率影响（2025-11-14）
+    - ✅ 03 - 逻辑回归：Sigmoid、交叉熵损失、二分类、决策边界（2025-11-15）
+    - ✅ 04 - Softmax 回归：多分类、One-hot编码、与Sigmoid关系（2025-11-15）
+    - ✅ 05 - 正则化：L1/L2、过拟合防止、λ参数调优（2025-11-15）
+    - ✅ 06 - 神经网络：多层感知机、反向传播、激活函数对比（2025-11-15）
+  - 第二阶段：深度学习基础（进行中）🔄
+    - 📍 CNN（卷积神经网络）：卷积、池化、图像分类（下一步）
+    - RNN/LSTM：序列建模、时间序列、文本处理
+    - Embedding：词嵌入、语义表示
+    - 优化算法：Adam、学习率调度、Dropout、BatchNorm
+    - 目标：为推荐系统打好深度学习基础
+  - 第三阶段：深度学习推荐系统（待开始）
+    - 双塔模型、CTR预估、多任务学习、召回排序
     - 目标：快速定位模型推理与 serving 问题
+  - → 代码仓库：[practices/ml-basics/](applications/artificial-intelligence/practices/ml-basics/)
   - → [深度学习推荐系统学习路径](applications/artificial-intelligence/recommendation-systems/deep-learning-recsys-learning-path.md)
+
+- 📊 **多模态/图像大模型训练与推理**（<1k卡资源）
+  - 以 Megatron 等框架为抓手，纵向打通算子、硬件与推理栈，持续深挖性能边界
+  - → [高效训练与部署多模态大模型（<1k卡）](applications/artificial-intelligence/foundation-models/efficient-multimodal-llm-training.md)
 
 ## 📊 学习进度
 
 > 记录学习历程，见证成长
-
-### 已完成
-- ✅ **数学基础** (2025-10)
-  - 离散数学
-  - 线性代数
-  - 概率统计
-  - 微积分
 
 ### 已完成
 - ✅ **数学基础** (2025-10)
@@ -111,39 +122,29 @@ cs-concepts/
   - 栈与队列
   - 哈希表
   - 树与图
-
-### 已完成
 - ✅ **算法基础** (2025-10)
   - 复杂度分析
   - 排序与搜索
   - 递归
   - 动态规划
-
-### 已完成
 - ✅ **操作系统** (2025-10)
   - 进程与线程
   - 进程同步与互斥
   - 内存管理
   - 文件系统
   - I/O系统
-
-### 已完成
 - ✅ **计算机网络** (2025-10)
   - 网络基础与分层模型
   - 物理层与数据链路层
   - 网络层
   - 传输层
   - 应用层
-
-### 已完成
 - ✅ **计算机体系结构** (2025-10)
   - 计算机组成原理
   - 指令集架构
   - 存储层次结构
   - 流水线与并行处理
   - 性能评估
-
-### 已完成
 - ✅ **数据库** (2025-10)
   - ✅ 数据库基础概念
   - ✅ 索引与查询优化

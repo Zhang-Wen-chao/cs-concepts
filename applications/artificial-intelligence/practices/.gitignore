@@ -43,6 +43,11 @@ wandb/
 *.swp
 *~
 
+# 生成的图片（实验结果）
+*.png
+*.jpg
+*.jpeg
+
 # IDE
 .vscode/
 .idea/

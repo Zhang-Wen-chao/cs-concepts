@@ -40,7 +40,12 @@
   - [卷积神经网络](deep-learning/architectures/cnn.md) - 用于图像处理
   - [循环神经网络](deep-learning/architectures/rnn-lstm.md) - 用于序列数据
   - [Transformer架构](deep-learning/architectures/transformers.md) - 注意力机制
-  - [生成对抗网络](deep-learning/architectures/gans.md) - 生成模型
+- [生成对抗网络](deep-learning/architectures/gans.md) - 生成模型
+
+### [基础模型与大模型](foundation-models/)
+面向大规模通用模型的系统化训练与部署
+
+- [高效训练与部署多模态大模型（<1k卡）](foundation-models/efficient-multimodal-llm-training.md) - 在受限资源下构建具备竞争力的多模态/图像大模型训练与推理体系
 
 ### [推荐系统](recommendation-systems/)
 结合工程与建模的智能推荐体系
