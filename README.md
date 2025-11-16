@@ -93,7 +93,7 @@ cs-concepts/
   - 第三阶段：深度学习推荐系统（待开始）
     - 双塔模型、CTR预估、多任务学习、召回排序
     - 目标：快速定位模型推理与 serving 问题
-  - → 代码仓库：[practices/ml-basics/](applications/artificial-intelligence/practices/ml-basics/)
+  - → 代码仓库：[machine-learning/practices/](applications/artificial-intelligence/machine-learning/practices/)
   - → [深度学习推荐系统学习路径](applications/artificial-intelligence/recommendation-systems/deep-learning-recsys-learning-path.md)
 
 - 📊 **多模态/图像大模型训练与推理**（<1k卡资源）
