@@ -58,10 +58,10 @@
 - 可视化降维（PCA）
 
 **文件：**
-- `03_embedding_numpy.py` - NumPy手写实现
+- `03_embedding_numpy.py` - NumPy手写实现 ✅
 - `03_embedding_pytorch.py` - PyTorch实现（nn.Embedding + GPU）✅
 
-**已掌握：** 2025-11-17（双版本完成）
+**已掌握：** 2025-11-19（双版本完成）
 
 ---
 
