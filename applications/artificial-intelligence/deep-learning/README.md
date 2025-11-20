@@ -24,7 +24,7 @@
 - 图像分类实战（MNIST）
 
 **文件：**
-- `01_cnn_basics_numpy.py` - NumPy手写实现
+- `01_cnn_basics_numpy.py` - NumPy手写实现 ✅
 - `01_cnn_basics_pytorch.py` - PyTorch实现 + GPU训练 ✅
 
 **已掌握：** 2025-11-17（双版本完成）
@@ -41,7 +41,7 @@
 - 时间序列分析
 
 **文件：**
-- `02_rnn_lstm_numpy.py` - NumPy手写实现
+- `02_rnn_lstm_numpy.py` - NumPy手写实现 ✅
 - `02_rnn_lstm_pytorch.py` - PyTorch实现 + GPU训练 ✅
 
 **已掌握：** 2025-11-17（双版本完成）
@@ -75,7 +75,7 @@
 - 梯度裁剪、权重初始化
 
 **文件：**
-- `04_optimization_regularization_numpy.py` - NumPy手写实现
+- `04_optimization_regularization_numpy.py` - NumPy手写实现 ✅
 - `04_optimization_regularization_pytorch.py` - PyTorch完整实践 ✅
 
 **已掌握：** 2025-11-17（双版本完成）
@@ -94,8 +94,8 @@
 - 注意力可视化
 
 **文件：**
-- `05_attention.py` - NumPy手写实现
-- `05_attention_pytorch.py` - PyTorch实现
+- `practices/05_attention_numpy.py` - NumPy手写实现
+- `practices/05_attention_pytorch.py` - PyTorch实现
 
 **为什么重要？**
 - Transformer的核心组件
@@ -363,8 +363,4 @@ data = data.to(device)
 - ✅ PyTorch版本全部完成（01-04）- GPU加速训练
 - 📍 准备学习第二阶段（Attention + Transformer）
 
-### 建议行动
-1. **继续推荐系统** - 先学双塔模型（工作相关）
-2. **回来补Attention** - 对理解推荐系统有帮助
-3. **实践PyTorch版本** - 在GPU上运行，体验加速效果
 
