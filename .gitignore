@@ -26,7 +26,7 @@ applications/artificial-intelligence/deep-learning/practices/data/
 applications/artificial-intelligence/machine-learning/practices/data/
 applications/artificial-intelligence/recommendation-systems/practices/data/
 
-# Generated images and outputs
+# Generated images and outputs (already covers outputs/ directory)
 *.png
 *.jpg
 *.jpeg

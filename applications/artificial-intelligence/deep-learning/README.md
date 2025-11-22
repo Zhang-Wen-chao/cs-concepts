@@ -84,7 +84,29 @@
 
 ### 第二阶段：现代架构（核心）⭐
 
-#### 05 - Attention 机制
+#### 05 - 经典卷积网络架构（CNN Zoo）✅
+**概念：** 卷积网络发展脉络中的代表性里程碑模型
+
+**实现内容：**
+- LeNet-5：早期手写数字识别网络
+- AlexNet：ReLU + Dropout 引爆深度学习
+- VGG-16：深层堆叠的 3x3 卷积
+- ResNet-18：残差连接缓解梯度消失
+- 轻量实践：CIFAR-10 训练脚手架
+
+**文件：**
+- `practices/05_classic_cnn_architectures_pytorch.py` - PyTorch实现（含训练脚手架）✅
+
+**为什么重要？**
+- 串联 CNN 的技术演进线索
+- 迁移学习常用的骨干网络
+- 为后续视觉任务（检测、分割）打基础
+
+**已掌握：** 2025-11-21
+
+---
+
+#### 06 - Attention 机制 ✅
 **概念：** 让模型关注重要信息（Transformer的基础）
 
 **实现内容：**
@@ -94,37 +116,40 @@
 - 注意力可视化
 
 **文件：**
-- `practices/05_attention_numpy.py` - NumPy手写实现
-- `practices/05_attention_pytorch.py` - PyTorch实现
+- `practices/06_attention_numpy.py` - NumPy手写实现 ✅
+- `practices/06_attention_pytorch.py` - PyTorch实现 ✅
 
 **为什么重要？**
 - Transformer的核心组件
 - BERT、GPT、ViT都基于此
 - 现代NLP/CV的基础
 
+**已掌握：** 2025-11-21
+
 ---
 
-#### 06 - Transformer 架构
+#### 07 - Transformer 架构
 **概念：** "Attention is All You Need"（现代深度学习基石）
 
 **实现内容：**
 - Encoder-Decoder结构
 - Position Encoding：位置编码
-- Layer Normalization
-- 机器翻译实战
+- Masked Self-Attention + Cross-Attention
+- 序列到序列任务（序列反转）
 
 **文件：**
-- `06_transformer.py` - NumPy简化实现
-- `06_transformer_pytorch.py` - PyTorch完整实现
+- `practices/07_transformer_pytorch.py` - PyTorch完整实现 ✅
 
 **为什么重要？**
 - 取代RNN成为序列建模主流
 - BERT、GPT的基础
 - 视觉Transformer（ViT）
 
+**说明：** Transformer 较复杂，只提供 PyTorch 版本。Attention 原理已在 06 的 NumPy 版本中学习。
+
 ---
 
-#### 07 - 预训练与微调
+#### 08 - 预训练与微调
 **概念：** 迁移学习实践（站在巨人肩膀上）
 
 **实现内容：**
@@ -134,7 +159,7 @@
 - 特征提取 vs 全模型微调
 
 **文件：**
-- `07_transfer_learning_pytorch.py` - PyTorch实现（无NumPy版）
+- `08_transfer_learning_pytorch.py` - PyTorch实现（无NumPy版）
 
 **为什么重要？**
 - 工业界标准做法
@@ -145,7 +170,7 @@
 
 ### 第三阶段：计算机视觉（高级）
 
-#### 08 - 目标检测
+#### 09 - 目标检测
 **概念：** 检测图像中的多个物体（位置 + 类别）
 
 **实现内容：**
@@ -155,7 +180,7 @@
 - 实战：检测图片中的物体
 
 **文件：**
-- `08_object_detection_pytorch.py` - PyTorch实现
+- `09_object_detection_pytorch.py` - PyTorch实现
 
 ---
 
@@ -360,7 +385,9 @@ data = data.to(device)
 
 ### 当前进度
 - ✅ 第一阶段完成（4个模块，NumPy + PyTorch 双版本）
-- ✅ PyTorch版本全部完成（01-04）- GPU加速训练
-- 📍 准备学习第二阶段（Attention + Transformer）
-
+- ✅ 第二阶段进行中
+  - ✅ 05 - 经典 CNN 架构（2025-11-21）
+  - ✅ 06 - Attention 机制（2025-11-21）
+  - 🚀 07 - Transformer 架构（代码已创建，待学习）
+- 📍 下一步：学习完整的 Transformer，然后可以开始推荐系统实践
 

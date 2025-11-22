@@ -423,9 +423,9 @@ def print_summary():
    ✓ 多模态: CLIP、DALL-E
 
 下一步：
-  → 学习完整的 Transformer 架构（06_transformer_numpy.py）
+  → 学习完整的 Transformer 架构（07_transformer_numpy.py）
   → 理解 Position Encoding（位置编码）
-  → 看 PyTorch 版本（05_attention_pytorch.py）
+  → 看 PyTorch 版本（06_attention_pytorch.py）
     """)
 
 
