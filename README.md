@@ -84,14 +84,20 @@ cs-concepts/
     - ✅ 04 - Softmax 回归：多分类、One-hot编码、与Sigmoid关系（2025-11-15）
     - ✅ 05 - 正则化：L1/L2、过拟合防止、λ参数调优（2025-11-15）
     - ✅ 06 - 神经网络：多层感知机、反向传播、激活函数对比（2025-11-15）
-  - 第二阶段：深度学习基础（进行中）🔄
-    - ✅ CNN（卷积神经网络）：卷积、池化、图像分类（2025-11-16）
-    - ✅ Embedding：词嵌入、语义表示、Word2Vec、推荐系统应用（2025-11-19）
-    - 📍 RNN/LSTM：序列建模、时间序列、文本处理（下一步）
-    - 优化算法：Adam、学习率调度、Dropout、BatchNorm
-    - 目标：为推荐系统打好深度学习基础
-  - 第三阶段：深度学习推荐系统（待开始）
-    - 双塔模型、CTR预估、多任务学习、召回排序
+  - 第二阶段：深度学习基础（已完成核心部分）✅
+    - ✅ 01 - CNN（卷积神经网络）：卷积、池化、图像分类（2025-11-16）
+    - ✅ 02 - RNN/LSTM：循环神经网络、序列建模（2025-11-17）
+    - ✅ 03 - Embedding：词嵌入、语义表示、Word2Vec、推荐系统应用（2025-11-19）
+    - ✅ 04 - 优化与正则化：Adam、学习率调度、Dropout、BatchNorm（2025-11-17）
+    - ✅ 05 - 经典 CNN 架构：LeNet、AlexNet、VGG、ResNet（2025-11-21）
+    - ✅ 06 - Attention 机制：Self-Attention、Multi-Head Attention（2025-11-21）
+    - ✅ 07 - Transformer：Encoder-Decoder、序列到序列任务（2025-11-22）
+    - 目标：为推荐系统打好深度学习基础 ✅ 已达成
+  - 第三阶段：深度学习推荐系统（进行中，2025-11-22 开始）
+    - ✅ 双塔模型：召回阶段的向量检索（2025-11-22）
+    - ✅ Wide & Deep：精排阶段的手工特征交叉（2025-11-22）
+    - 🔄 DeepFM：精排阶段的自动特征交叉（待学习）
+    - CTR 预估、多任务学习、用户兴趣建模（DIN）
     - 目标：快速定位模型推理与 serving 问题
   - → 代码仓库：[machine-learning/practices/](applications/artificial-intelligence/machine-learning/practices/)
   - → [深度学习推荐系统学习路径](applications/artificial-intelligence/recommendation-systems/deep-learning-recsys-learning-path.md)
@@ -169,7 +175,7 @@ cs-concepts/
 > 记录当前还不太理解的知识点，定期回顾更新
 
 ### 基础概念
-- SVD矩阵分解在推荐系统中的应用原理 - `fundamentals/mathematics/`
+- ~~SVD矩阵分解在推荐系统中的应用原理~~ ✅ 已理解（2025-11-22）：矩阵分解 = 权重学习 = Embedding 的数学版本
 
 ### 系统层面
 - 矩阵乘法的分块优化（Loop Tiling）原理 - `systems/computer-architecture/performance-evaluation.md`

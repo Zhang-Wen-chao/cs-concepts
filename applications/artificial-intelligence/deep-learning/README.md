@@ -128,14 +128,14 @@
 
 ---
 
-#### 07 - Transformer 架构
+#### 07 - Transformer 架构 ✅
 **概念：** "Attention is All You Need"（现代深度学习基石）
 
 **实现内容：**
 - Encoder-Decoder结构
 - Position Encoding：位置编码
 - Masked Self-Attention + Cross-Attention
-- 序列到序列任务（序列反转）
+- 序列到序列任务（序列反转，验证集准确率 91.56%）
 
 **文件：**
 - `practices/07_transformer_pytorch.py` - PyTorch完整实现 ✅
@@ -146,6 +146,8 @@
 - 视觉Transformer（ViT）
 
 **说明：** Transformer 较复杂，只提供 PyTorch 版本。Attention 原理已在 06 的 NumPy 版本中学习。
+
+**已掌握：** 2025-11-22
 
 ---
 
@@ -385,9 +387,11 @@ data = data.to(device)
 
 ### 当前进度
 - ✅ 第一阶段完成（4个模块，NumPy + PyTorch 双版本）
-- ✅ 第二阶段进行中
+- ✅ 第二阶段核心完成
   - ✅ 05 - 经典 CNN 架构（2025-11-21）
   - ✅ 06 - Attention 机制（2025-11-21）
-  - 🚀 07 - Transformer 架构（代码已创建，待学习）
-- 📍 下一步：学习完整的 Transformer，然后可以开始推荐系统实践
+  - ✅ 07 - Transformer 架构（2025-11-22，验证集准确率 91.56%）
+- 📍 下一步：选择学习方向
+  - **推荐路径 A（推荐系统）**：直接开始推荐系统实践（已具备基础）
+  - **推荐路径 B（深度学习进阶）**：继续学习预训练模型（BERT/GPT）、CV高级任务
 
