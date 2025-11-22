@@ -343,7 +343,17 @@ def train_model(model, train_loader, val_loader, device, num_epochs=20, lr=0.000
     criterion = nn.CrossEntropyLoss(ignore_index=0)  # 忽略 padding
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
+    # 添加学习率调度器
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, mode='min', factor=0.5, patience=5, verbose=True
+    )
+
     history = {'train_loss': [], 'train_acc': [], 'val_loss': [], 'val_acc': []}
+
+    # 早停机制
+    best_val_loss = float('inf')
+    patience_counter = 0
+    patience = 10
 
     print("\n开始训练...")
     for epoch in range(num_epochs):
@@ -415,10 +425,28 @@ def train_model(model, train_loader, val_loader, device, num_epochs=20, lr=0.000
         history['val_loss'].append(val_loss)
         history['val_acc'].append(val_acc)
 
+        # 学习率调度
+        scheduler.step(val_loss)
+
+        # 早停检查
+        if val_loss < best_val_loss:
+            best_val_loss = val_loss
+            patience_counter = 0
+            # 保存最佳模型
+            torch.save(model.state_dict(), 'best_transformer.pth')
+        else:
+            patience_counter += 1
+            if patience_counter >= patience:
+                print(f'\n早停触发！在 epoch {epoch+1}')
+                # 加载最佳模型
+                model.load_state_dict(torch.load('best_transformer.pth'))
+                break
+
         if (epoch + 1) % 10 == 0:  # 每10轮打印一次
             print(f'Epoch {epoch+1}/{num_epochs}:')
             print(f'  Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.2f}%')
             print(f'  Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%')
+            print(f'  当前学习率: {optimizer.param_groups[0]["lr"]:.6f}')
 
     return history
 
@@ -543,8 +571,8 @@ def main():
     vocab_size = 30  # 降低词汇表大小，更容易学习
     seq_len = 6  # 降低序列长度，更容易学习
 
-    train_dataset = Seq2SeqDataset(num_samples=5000, seq_len=seq_len, vocab_size=vocab_size)  # 增加数据
-    val_dataset = Seq2SeqDataset(num_samples=1000, seq_len=seq_len, vocab_size=vocab_size)
+    train_dataset = Seq2SeqDataset(num_samples=10000, seq_len=seq_len, vocab_size=vocab_size)  # 大幅增加数据
+    val_dataset = Seq2SeqDataset(num_samples=2000, seq_len=seq_len, vocab_size=vocab_size)
 
     train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=64, shuffle=False)
@@ -561,12 +589,12 @@ def main():
     model = Transformer(
         src_vocab_size=vocab_size,
         tgt_vocab_size=vocab_size,
-        d_model=256,  # 增加模型容量
-        num_heads=8,
-        num_layers=4,  # 增加层数
-        d_ff=1024,  # 增加FFN维度
+        d_model=128,  # 降低模型容量，防止过拟合
+        num_heads=4,  # 减少注意力头数
+        num_layers=2,  # 减少层数
+        d_ff=512,  # 减少FFN维度
         max_len=seq_len + 2,
-        dropout=0.1
+        dropout=0.2  # 增加dropout，防止过拟合
     ).to(DEVICE)
 
     print(f"模型参数量: {sum(p.numel() for p in model.parameters()):,}")
@@ -582,7 +610,7 @@ def main():
     print("训练模型")
     print("=" * 60)
 
-    history = train_model(model, train_loader, val_loader, DEVICE, num_epochs=50, lr=0.001)  # 增加训练轮数，提高学习率
+    history = train_model(model, train_loader, val_loader, DEVICE, num_epochs=100, lr=0.001)  # 更多轮次，但有早停
 
     # 绘制训练历史
     plot_training_history(history)
