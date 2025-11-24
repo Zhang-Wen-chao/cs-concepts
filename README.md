@@ -96,8 +96,9 @@ cs-concepts/
   - 第三阶段：深度学习推荐系统（进行中，2025-11-22 开始）
     - ✅ 双塔模型：召回阶段的向量检索（2025-11-22）
     - ✅ Wide & Deep：精排阶段的手工特征交叉（2025-11-22）
-    - 🔄 DeepFM：精排阶段的自动特征交叉（待学习）
-    - CTR 预估、多任务学习、用户兴趣建模（DIN）
+    - ✅ DeepFM：精排阶段的自动特征交叉（FM因子分解机）（2025-11-22）
+    - 🔄 DIN：用户兴趣建模（Attention机制）（待学习）
+    - 多任务学习、序列建模
     - 目标：快速定位模型推理与 serving 问题
   - → 代码仓库：[machine-learning/practices/](applications/artificial-intelligence/machine-learning/practices/)
   - → [深度学习推荐系统学习路径](applications/artificial-intelligence/recommendation-systems/deep-learning-recsys-learning-path.md)

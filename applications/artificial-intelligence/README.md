@@ -42,7 +42,8 @@
 - ✅ 协同过滤（User-based、Item-based、矩阵分解）
 - ✅ 双塔模型（Two-Tower Model）- 召回阶段（2025-11-22）
 - ✅ Wide & Deep - 精排阶段，手工交叉特征（2025-11-22）
-- 🔄 DeepFM - 精排阶段，自动交叉特征（待学习）
+- ✅ DeepFM - 精排阶段，自动交叉特征（2025-11-22）
+- 🔄 DIN（Deep Interest Network）- 用户兴趣建模（待学习）
 
 ---
 
