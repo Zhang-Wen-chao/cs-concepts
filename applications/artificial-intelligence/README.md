@@ -43,7 +43,11 @@
 - ✅ 双塔模型（Two-Tower Model）- 召回阶段（2025-11-22）
 - ✅ Wide & Deep - 精排阶段，手工交叉特征（2025-11-22）
 - ✅ DeepFM - 精排阶段，自动交叉特征（2025-11-22）
-- 🔄 DIN（Deep Interest Network）- 用户兴趣建模（待学习）
+- ✅ DIN（Deep Interest Network）- 用户兴趣建模（2025-11-22）
+- ✅ 多任务学习（Multi-Task Learning）- CTR + CVR 联合训练（2025-11-26）
+- 🔄 粗排（Coarse Ranking）- 轻量级模型（待学习）
+- 🔄 重排（Re-Ranking）- MMR 多样性优化（待学习）
+- 🔄 混排（Blending）- 广告穿插与质量控制（待学习）
 
 ---
 

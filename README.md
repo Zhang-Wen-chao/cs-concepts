@@ -97,9 +97,10 @@ cs-concepts/
     - ✅ 双塔模型：召回阶段的向量检索（2025-11-22）
     - ✅ Wide & Deep：精排阶段的手工特征交叉（2025-11-22）
     - ✅ DeepFM：精排阶段的自动特征交叉（FM因子分解机）（2025-11-22）
-    - 🔄 DIN：用户兴趣建模（Attention机制）（待学习）
-    - 多任务学习、序列建模
-    - 目标：快速定位模型推理与 serving 问题
+    - ✅ DIN：用户兴趣建模（Attention机制）（2025-11-22）
+    - ✅ 多任务学习（MTL）：CTR + CVR 联合训练（2025-11-26）
+    - 🔄 粗排、重排、混排（待学习）
+    - 目标：掌握完整推荐系统链路
   - → 代码仓库：[machine-learning/practices/](applications/artificial-intelligence/machine-learning/practices/)
   - → [深度学习推荐系统学习路径](applications/artificial-intelligence/recommendation-systems/deep-learning-recsys-learning-path.md)
 
