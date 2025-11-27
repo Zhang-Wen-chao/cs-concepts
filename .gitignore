@@ -42,3 +42,21 @@ applications/artificial-intelligence/recommendation-systems/practices/data/
 venv/
 env/
 ENV/
+
+# C++ compiled files and executables
+*.o
+*.out
+*.exe
+*.a
+*.dylib
+
+# C++ practice executables (在 practices/ 目录下的所有可执行文件)
+languages/cpp/*/practices/*
+!languages/cpp/*/practices/*.cpp
+!languages/cpp/*/practices/*.h
+!languages/cpp/*/practices/*.md
+
+# Test files
+test_data.txt
+test.txt
+*.tmp
