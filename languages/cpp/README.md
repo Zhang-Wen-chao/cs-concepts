@@ -35,9 +35,9 @@ auto p = std::make_unique<int>(10);
 - [x] 00_modern_cpp_mindset.md - 现代 C++ 思维（必读）✅ 2025-11-27
 - [x] 01_raii.md - RAII 原则（最重要的概念）✅ 2025-11-27
 - [x] 02_smart_pointers.md - 智能指针 ✅ 2025-11-28
-- [ ] 03_containers.md - 标准容器
-- [ ] 04_move_semantics.md - 移动语义
-- [ ] 05_lambda.md - Lambda 表达式
+- [x] 03_containers.md - 标准容器 ✅ 2025-11-29
+- [x] 04_move_semantics.md - 移动语义 ✅ 2025-11-29
+- [x] 05_lambda.md - Lambda 表达式 ✅ 2025-11-29
 - [ ] 06_templates_basics.md - 模板基础
 
 **实践项目：**
@@ -149,7 +149,7 @@ std::vector<int> vec;    // 高效、安全、经过充分测试
 
 **开始时间：** 2025-11-27
 
-**阶段 1 进度：** 3/7 ✅✅✅⬜️⬜️⬜️⬜️
+**阶段 1 进度：** 6/7 ✅✅✅✅✅✅⬜️
 
 **阶段 2 进度：** 0/6 ⬜️⬜️⬜️⬜️⬜️⬜️
 
