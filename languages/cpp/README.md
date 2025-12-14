@@ -41,8 +41,8 @@ auto p = std::make_unique<int>(10);
 - [x] 06_templates_basics.md - 模板基础 ✅ 2025-11-29
 
 **实践项目：**
-- [ ] 实现一个 RAII 风格的文件管理类
-- [ ] 用智能指针管理资源的小程序
+- [x] 实现一个 RAII 风格的文件管理类（`practices/07_raii_file_manager.cpp`）✅ 2025-12-12
+- [x] 用智能指针管理资源的小程序（`practices/08_smart_pointer_resource.cpp`）✅ 2025-12-12
 
 ---
 

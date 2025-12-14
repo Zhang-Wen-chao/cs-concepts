@@ -26,6 +26,14 @@
 - Python的对象模型和内存管理
 - Python生态系统和应用领域
 
+### [Go 学习路径](go/)
+面向系统与并发编程的 Go 学习路线
+
+- Go 语言哲学与语法基础
+- goroutine / channel / context 并发原语
+- Go Modules、testing、net/http、工程化工具
+- CLI + Web 服务综合项目
+
 ---
 
 理解编程语言的本质特性，有助于选择合适的工具解决不同问题，并写出更优雅的代码。
