@@ -1,155 +1,50 @@
-/**
- * 实践项目 2：用智能指针管理资源的小程序
- *
- * 编译：g++ -std=c++17 08_smart_pointer_resource.cpp -o smart_pointer_resource
- * 运行：./smart_pointer_resource
- */
+// 智能指针资源管理（最小示例）
+// 编译：g++ -std=c++17 08_smart_pointer_resource.cpp -o resource
 
 #include <iostream>
 #include <memory>
-#include <string>
-#include <unordered_map>
-#include <utility>
 #include <vector>
 
 class Resource {
+    int id_;
 public:
-    explicit Resource(std::string name)
-        : name_(std::move(name)), payload_(std::make_unique<std::vector<int>>(1024, 1)) {
-        std::cout << "[Resource] acquired " << name_ << std::endl;
-    }
-
-    ~Resource() {
-        std::cout << "[Resource] released " << name_ << std::endl;
-    }
-
-    void Use() const {
-        const auto checksum = payload_->size();
-        std::cout << "    using resource " << name_ << ", checksum " << checksum << std::endl;
-    }
-
-    const std::string& name() const { return name_; }
-
-private:
-    std::string name_;
-    std::unique_ptr<std::vector<int>> payload_;
+    Resource(int id) : id_(id) { std::cout << "Resource(" << id_ << ")\n"; }
+    ~Resource() { std::cout << "~Resource(" << id_ << ")\n"; }
+    void use() { std::cout << "Using resource " << id_ << "\n"; }
 };
 
-class ResourceManager {
-public:
-    std::shared_ptr<Resource> Acquire(const std::string& name) {
-        CollectGarbage();
-        if (auto existing = GetAlive(name)) {
-            std::cout << "[Manager] reuse cached resource: " << name << std::endl;
-            return existing;
-        }
-        auto deleter = [name](Resource* resource) {
-            std::cout << "[Manager] custom delete for " << name << std::endl;
-            delete resource;
-        };
-        auto resource = std::shared_ptr<Resource>(new Resource(name), std::move(deleter));
-        cache_[name] = resource;
-        return resource;
-    }
-
-    void CollectGarbage() {
-        for (auto it = cache_.begin(); it != cache_.end();) {
-            if (it->second.expired()) {
-                it = cache_.erase(it);
-            } else {
-                ++it;
-            }
-        }
-    }
-
-    void PrintStats() const {
-        size_t alive = 0;
-        for (const auto& [_, weak_resource] : cache_) {
-            if (!weak_resource.expired()) {
-                ++alive;
-            }
-        }
-        std::cout << "[Manager] cache slots: " << cache_.size()
-                  << ", alive resources: " << alive << std::endl;
-    }
-
-private:
-    std::shared_ptr<Resource> GetAlive(const std::string& name) {
-        auto it = cache_.find(name);
-        if (it == cache_.end()) {
-            return nullptr;
-        }
-        return it->second.lock();
-    }
-
-    std::unordered_map<std::string, std::weak_ptr<Resource>> cache_;
-};
-
-class Worker {
-public:
-    Worker(std::string name, std::shared_ptr<Resource> resource)
-        : name_(std::move(name)), resource_(std::move(resource)) {}
-
-    void Process() const {
-        if (auto res = resource_) {
-            std::cout << "[" << name_ << "] start using " << res->name() << std::endl;
-            res->Use();
-            std::cout << "[" << name_ << "] done" << std::endl;
-        }
-    }
-
-private:
-    std::string name_;
-    std::shared_ptr<Resource> resource_;
-};
-
-void RunSmartPointerDemo() {
-    std::cout << "\n=== 智能指针资源管理示例 ===" << std::endl;
-    auto manager = std::make_unique<ResourceManager>();
-
-    auto dataset = manager->Acquire("dataset.bin");
-    {
-        Worker loader("Loader", dataset);
-        loader.Process();
-    }
-
-    {
-        auto shared_config = manager->Acquire("config.json");
-        Worker validator("Validator", shared_config);
-        Worker executor("Executor", shared_config);
-        validator.Process();
-        executor.Process();
-        std::cout << "config.json use_count = " << shared_config.use_count() << std::endl;
-    }
-
-    manager->PrintStats();
-
-    std::weak_ptr<Resource> weak_link;
-    {
-        auto temp = manager->Acquire("temporary.cache");
-        weak_link = temp;
-        Worker reporter("Reporter", temp);
-        reporter.Process();
-        std::cout << "temporary.cache use_count (inside scope) = " << temp.use_count() << std::endl;
-    }
-
-    if (weak_link.expired()) {
-        std::cout << "temporary.cache 已经释放" << std::endl;
-    } else {
-        std::cout << "temporary.cache 仍在内存，自动清理后释放" << std::endl;
-    }
-
-    manager->CollectGarbage();
-    manager->PrintStats();
+// 工厂函数返回 unique_ptr
+std::unique_ptr<Resource> create_resource(int id) {
+    return std::make_unique<Resource>(id);
 }
 
 int main() {
-    std::cout << "============================================" << std::endl;
-    std::cout << "现代 C++ 实践 2：智能指针资源管理" << std::endl;
-    std::cout << "============================================" << std::endl;
+    // 1. unique_ptr（独占）
+    {
+        auto r1 = create_resource(1);
+        r1->use();
+    }  // 自动释放
 
-    RunSmartPointerDemo();
+    // 2. shared_ptr（共享）
+    {
+        auto r2 = std::make_shared<Resource>(2);
+        {
+            auto r3 = r2;  // 共享所有权
+            std::cout << "ref count: " << r2.use_count() << "\n";  // 2
+        }  // r3 销毁，引用计数-1
+        std::cout << "ref count: " << r2.use_count() << "\n";  // 1
+    }  // r2 销毁，资源释放
 
-    std::cout << "\n示例执行完毕！" << std::endl;
-    return 0;
+    // 3. 容器中管理资源
+    {
+        std::vector<std::unique_ptr<Resource>> resources;
+        resources.push_back(std::make_unique<Resource>(3));
+        resources.push_back(std::make_unique<Resource>(4));
+
+        for (auto& r : resources) {
+            r->use();
+        }
+    }  // 自动释放所有资源
+
+    std::cout << "All resources released\n";
 }
