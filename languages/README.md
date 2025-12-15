@@ -29,10 +29,10 @@
 ### [Go 学习路径](go/)
 面向系统与并发编程的 Go 学习路线
 
-- Go 语言哲学与语法基础
-- goroutine / channel / context 并发原语
-- Go Modules、testing、net/http、工程化工具
-- CLI + Web 服务综合项目
+- ✅ [`01_go_mindset.md`](go/01_go_mindset.md) —— 语言哲学、设计取舍、预习思考（对应实践：[`practices/01_mindset`](go/practices/01_mindset/))
+- ✅ [`02_syntax_basics.md`](go/02_syntax_basics.md) —— 变量/控制流/函数/指针基础（对应实践：[`practices/02_syntax_basics`](go/practices/02_syntax_basics/))
+- 🏃 `03_collections.md`（进行中）—— array/slice/map（计划实践：`practices/03_collections`）
+- 后续章节将继续配套 CLI、测试和小项目，保持“文档 + 练习”一一对应。
 
 ---
 
