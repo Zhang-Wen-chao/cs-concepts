@@ -47,7 +47,7 @@ Go 也沿用 C++ 学习路径里的“文档 → 示例 → 运行 → 小抄”
 **实践：迷你 CLI `greet`**
 - [ ] 使用 `flag` 或 `cobra` 解析 `--name`、`--lang`，默认输出中文/英文问候。
 - [ ] 输出格式通过 table-driven test 覆盖（`go test ./...` 必须通过）。
-- [ ] README 记录用法与示例输出，`golangci-lint run`（或 `go vet`）无告警。
+- [ ] 在 `main.go` 头部注释记录常用命令（`gofmt/go test/go run --flag`），`golangci-lint run`（或 `go vet`）无告警。
 - [ ] 目录建议：`playground/mindset/greet`；完成后在 `go_cheatsheet.md` 添加“CLI flag + table test”条目。
 
 ### 阶段 2 · 并发（约 1 周）

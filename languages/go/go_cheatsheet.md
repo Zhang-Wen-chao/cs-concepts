@@ -4,93 +4,36 @@
 
 ---
 
-## 01. Go Mindset
+## 01. Go Mindset（notes/01_go_mindset.md + playground/mindset/greet）
 
-**工具优先**
-- `gofmt -w .` 统一缩进、注释对齐；发现排版问题第一时间跑它。
-- `go test ./...`、`golangci-lint run` 视为默认守门人，保持提交干净。
+**核心理念**
+1. 工具先行：写任何 Go 代码前跑 `gofmt -w .`、`go test ./...`，风格与正确性交由工具兜底。
+2. 声明即文档：导出函数/类型必须写 doc comment（`// Greeter ...`），否则 `go doc`/pkg.go.dev 无法生成说明。
+3. Less is More：组合优于继承，遇到并发问题优先 goroutine + channel（“share memory by communicating”）。
 
-**声明即文档**
-- 所有导出符号写 doc comment：`// Greeter prints ...`，便于 `go doc` 与 pkg.go.dev 生成说明。
-
-**并发哲学**
-- “Share memory by communicating” → 优先 goroutine + channel，最后才考虑共享锁。
-
----
-
-## 02. CLI + Tests（mindset/greet）
-
-**flag 解析**
-```go
-var name = flag.String("name", "gopher", "target")
-flag.Parse()
-fmt.Println(greeting(*name, *lang))
-```
-- `go run . --name=Go --lang=en` 与 Python 的 `--name/--lang` 相同，全部在 `main` 中解析。
-
-**表驱动测试**
-- 测试文件必须命名为 `*_test.go`，示例：
-```go
-func TestGreeting(t *testing.T) {
-    cases := []struct{ name, lang, want string }{
-        {"Go", "en", "Hello, Go!"},
-        {"", "zh", "你好，gopher！"},
-    }
-    for _, c := range cases {
-        got, err := greeting(c.name, c.lang)
-        if got != c.want || (err != nil) != false {
-            t.Fatalf("greeting(%q,%q)=%q err=%v", c.name, c.lang, got, err)
-        }
-    }
-}
-```
-- 把输入/期望写成表格（`[]struct{}`），循环 `t.Run` 即可覆盖多场景。
+**实践（flag + 表驱动测试）**
+- `flag.String(name, default, help)` 返回 `*string`，先 `flag.Parse()` 再 `*name` 解引用。
+  ```go
+  name := flag.String("name", "gopher", "target")
+  flag.Parse()
+  fmt.Println(greeting(*name, *lang))
+  ```
+- `:=` 是短变量声明，只能在函数内部使用；`greeting(*name, *lang)` 返回 `(string, error)`，用 `msg, err := ...` 接收。
+- 表驱动测试：`cases := []struct{ ... }{... }` + `t.Run` 循环，测试文件命名 `*_test.go` 并可用 `t.Parallel()` 并行执行。
 
 ---
 
-## 03. Syntax Basics（syntax_basics/stats）
+## 02. Syntax Basics（notes/02_syntax_basics.md + playground/syntax_basics/stats）
 
-**变量与零值**
-- `var count int` 自动赋 0；函数外只能用 `var`，函数内可用 `:=`。
-- 常量是编译期值：`const Pi = 3.14`。
-
-**多返回值 + 错误优先**
-```go
-func describeNumbers(nums []int) (Report, error) {
-    if len(nums) == 0 {
-        return Report{}, fmt.Errorf("empty input")
-    }
-    // ...
-    return report, nil
-}
-```
-- 使用结果前先判断 `err`，养成“error-first”习惯。
-
-**控制流**
-- 唯一循环：`for`。`if`、`switch` 支持短语句：
-```go
-if r, err := describeNumbers(nums); err != nil {
-    return err
-} else {
-    fmt.Println(r.Sum)
-}
-
-switch {
-case sum < 0:
-    return "negative"
-case sum == 0:
-    return "zero"
-default:
-    return "positive"
-}
-```
-- `switch` 默认 break，不必写 `break`，除非使用 `fallthrough`。
+1. 变量/常量：`var count int` 自动赋零值；函数内可用 `:=`。常量在编译期确定，例如 `const Pi = 3.14`。
+2. 多返回值：`func describeNumbers(nums []int) (Report, error)` —— 先判断 `err != nil` 再使用结果；命名返回值仅在极短函数中使用。
+3. 控制流：`if/for/switch` 都支持短语句（`if v, err := ...; err != nil { ... }`），`switch` 默认 `break`。切片遍历形态 `for i, v := range nums`，可用 `_` 忽略索引。
 
 ---
 
 ## TODO
-- [ ] Collections
-- [ ] Struct / Interface
-- [ ] Error Handling
-- [ ] Concurrency Toolkit
-- [ ] Tooling & Testing
+- [ ] 03 · Collections
+- [ ] 04 · Struct & Interface
+- [ ] 05 · Error Handling
+- [ ] 06 · Concurrency Toolkit
+- [ ] 07 · Tooling & Testing

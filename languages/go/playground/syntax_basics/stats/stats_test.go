@@ -2,9 +2,16 @@ package main
 
 import "testing"
 
+// TestDescribeNumbers 覆盖三种输入：正和、零和、空切片。
+// t *testing.T 是测试上下文，提供 Fatal/Fatalf 等断言方法。
 func TestDescribeNumbers(t *testing.T) {
-	t.Parallel()
+	t.Parallel() // 允许此测试与同文件其他测试并行运行
 
+	// cases 切片使用匿名 struct 描述输入/预期。字段解释：
+	// - name: 子测试名称
+	// - input: 函数输入的整数切片
+	// - want: 期望的 Report
+	// - wantErr: 是否预期返回 error
 	cases := []struct {
 		name    string
 		input   []int
@@ -23,7 +30,7 @@ func TestDescribeNumbers(t *testing.T) {
 		},
 		{
 			name:    "empty",
-			input:   nil,
+			input:   nil, // nil 切片表示没有元素
 			wantErr: true,
 		},
 	}
@@ -45,10 +52,12 @@ func TestDescribeNumbers(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 
+			// 逐字段比较：Count/Sum/Classification 都是整数或字符串，可直接 ==。
 			if got.Count != c.want.Count || got.Sum != c.want.Sum || got.Classification != c.want.Classification {
 				t.Fatalf("report mismatch: got %+v want %+v", got, c.want)
 			}
 
+			// Avg 是浮点，使用误差阈值比较。
 			if diff := got.Avg - c.want.Avg; diff > 0.0001 || diff < -0.0001 {
 				t.Fatalf("avg mismatch: got %f want %f", got.Avg, c.want.Avg)
 			}
@@ -56,6 +65,7 @@ func TestDescribeNumbers(t *testing.T) {
 	}
 }
 
+// TestClassify 单独测试 switch 分支，便于定位错误。
 func TestClassify(t *testing.T) {
 	t.Parallel()
 
