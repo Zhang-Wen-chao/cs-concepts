@@ -67,24 +67,141 @@ p1.reset();  // 引用计数 = 1
 
 **不拥有对象，不增加引用计数**
 
+#### 为什么需要 weak_ptr？
+
+**问题：`shared_ptr` 的循环引用会导致内存泄漏**
+
 ```cpp
-// 循环引用问题
+// ❌ 错误示例：循环引用导致内存泄漏
 struct Node {
     std::shared_ptr<Node> next;  // 强引用
-    std::weak_ptr<Node> prev;    // 弱引用，打破循环
+    std::shared_ptr<Node> prev;  // 也是强引用 💥
+    ~Node() { std::cout << "Node destroyed\n"; }
 };
 
-// 使用 weak_ptr
+auto n1 = std::make_shared<Node>();
+auto n2 = std::make_shared<Node>();
+n1->next = n2;  // n2 的引用计数 = 2
+n2->prev = n1;  // n1 的引用计数 = 2
+
+// 程序结束时：
+// n1 析构 → n1 对象的 ref_count 从 2 变为 1（n2->prev 还在指向）
+// n2 析构 → n2 对象的 ref_count 从 2 变为 1（n1->next 还在指向）
+// 💥 两个对象都不会被删除！内存泄漏！
+// 不会输出 "Node destroyed"
+```
+
+**内存布局（循环引用）：**
+```
+n1 对象 (ref=1) ←─┐
+  └→ next ────┐   │
+              ↓   │
+n2 对象 (ref=1) │  │
+  └→ prev ─────┴──┘
+
+引用计数都是 1，永远删不掉！
+```
+
+#### 解决方案：用 weak_ptr 打破循环
+
+```cpp
+// ✅ 正确示例：一个强引用 + 一个弱引用
+struct Node {
+    std::shared_ptr<Node> next;  // 强引用（拥有所有权）
+    std::weak_ptr<Node> prev;    // 弱引用（不拥有所有权）✅
+    ~Node() { std::cout << "Node destroyed\n"; }
+};
+
+auto n1 = std::make_shared<Node>();  // n1 对象 ref=1
+auto n2 = std::make_shared<Node>();  // n2 对象 ref=1
+
+n1->next = n2;  // n2 对象 ref=2（shared_ptr 增加计数）
+n2->prev = n1;  // n1 对象 ref=1（weak_ptr 不增加计数）✅
+
+// 程序结束时：
+// n2 析构 → n2 对象 ref 从 2 变为 1
+// n1 析构 → n1 对象 ref 从 1 变为 0 → 删除 n1 对象 ✅
+//         → n1->next 析构 → n2 对象 ref 从 1 变为 0 → 删除 n2 对象 ✅
+// 输出两次 "Node destroyed" ✅
+```
+
+#### 使用 weak_ptr
+
+```cpp
 auto sp = std::make_shared<int>(42);
 std::weak_ptr<int> wp = sp;  // 不增加引用计数
 
-// 访问前先转换为 shared_ptr
-if (auto temp = wp.lock()) {
-    std::cout << *temp;  // 安全访问
+// ❌ 不能直接访问
+// *wp;  // 编译错误！
+
+// ✅ 必须先 lock() 转为 shared_ptr
+if (auto temp = wp.lock()) {  // 如果对象还存在，返回 shared_ptr
+    std::cout << *temp;       // 42
 } else {
     std::cout << "对象已释放";
 }
 ```
+
+#### 双向引用的常规用法
+
+**在双向关系中，需要明确"谁拥有谁"：**
+
+```
+拥有方 → 被拥有方：用 shared_ptr（强引用）
+被拥有方 → 拥有方：用 weak_ptr（弱引用）
+```
+
+**常见场景：**
+
+1. **父子关系**（最常见）
+   ```cpp
+   class Child;
+
+   class Parent {
+       std::shared_ptr<Child> child;  // 父拥有子 → shared_ptr
+   };
+
+   class Child {
+       std::weak_ptr<Parent> parent;  // 子引用父 → weak_ptr
+
+       void notify_parent() {
+           if (auto p = parent.lock()) {  // 检查父对象是否还存在
+               p->handle_event();
+           }
+       }
+   };
+   ```
+
+2. **链表/树的双向指针**
+   ```cpp
+   struct TreeNode {
+       std::shared_ptr<TreeNode> left;      // 父 → 子：强引用
+       std::shared_ptr<TreeNode> right;     // 父 → 子：强引用
+       std::weak_ptr<TreeNode> parent;      // 子 → 父：弱引用
+   };
+   ```
+
+3. **观察者模式**
+   ```cpp
+   class Subject {
+       std::vector<std::weak_ptr<Observer>> observers_;  // 弱引用
+       // 主题不拥有观察者，观察者可以随时删除
+
+       void notify() {
+           for (auto it = observers_.begin(); it != observers_.end(); ) {
+               if (auto obs = it->lock()) {  // 观察者还存在
+                   obs->update();
+                   ++it;
+               } else {
+                   it = observers_.erase(it);  // 观察者已删除，清理
+               }
+           }
+       }
+   };
+   ```
+
+**判断方法**：问自己"谁的生命周期依赖谁？"
+- A 删除时，B 也应该删除 → A 用 `shared_ptr` 指向 B，B 用 `weak_ptr` 指向 A
 
 ## 选择指南
 
