@@ -108,6 +108,12 @@ cs-concepts/
   - 以 Megatron 等框架为抓手，纵向打通算子、硬件与推理栈，持续深挖性能边界
   - → [高效训练与部署多模态大模型（<1k卡）](applications/artificial-intelligence/foundation-models/efficient-multimodal-llm-training.md)
 
+- 🔧 **TensorFlow 深度学习框架**（2025-12-17 开始）
+  - ✅ 01 - 核心概念：张量、计算图、自动微分、tf.GradientTape（2025-12-17）
+  - 🔄 02 - Keras API：Sequential/Functional/Subclassing 三种建模方式（待学习）
+  - 目标：掌握 TensorFlow 进行深度学习实践
+  - → [TensorFlow 学习笔记](applications/artificial-intelligence/frameworks/tensorflow/)
+
 ## 📊 学习进度
 
 > 记录学习历程，见证成长
