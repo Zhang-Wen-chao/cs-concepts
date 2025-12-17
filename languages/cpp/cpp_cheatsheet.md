@@ -211,28 +211,132 @@ container.clear();
 
 ## 04. 移动语义
 
+**核心概念**：移动 = 转移所有权，不拷贝数据（O(1)）
+
+**左值 vs 右值**：
+```cpp
+int x = 10;
+//  ↑   ↑
+// 左值 右值
+
+// 左值：有名字，可以取地址
+int a = 5;  int* p = &a;  // ✅
+
+// 右值：临时对象，不能取地址
+int b = 10 + 20;  // 10 + 20 是右值
+// int* p = &(10 + 20);  // ❌
+
+// 右值马上销毁 → 可以"偷"走资源（移动）
+```
+
 **六个特殊成员函数**：
 ```cpp
 Widget w1;           // 1. 默认构造
-Widget w2(w1);       // 2. 拷贝构造（= 在声明时）
-w3 = w1;             // 3. 拷贝赋值（= 在赋值时）
-Widget w4(move(w1)); // 4. 移动构造（创建新对象）
-w4 = move(w2);       // 5. 移动赋值（已存在对象）
+Widget w2(w1);       // 2. 拷贝构造（创建新对象，from 左值）
+w3 = w1;             // 3. 拷贝赋值（已存在对象，from 左值）
+Widget w4(move(w1)); // 4. 移动构造（创建新对象，from 右值）
+w4 = move(w2);       // 5. 移动赋值（已存在对象，from 右值）
                      // 6. 析构
+```
+
+**移动构造/移动赋值实现**：
+```cpp
+class MyVector {
+    int* data_;
+    size_t size_;
+public:
+    // 移动构造
+    MyVector(MyVector&& o) noexcept
+        : data_(o.data_), size_(o.size_) {
+        o.data_ = nullptr;  // "偷"走资源，掏空原对象
+        o.size_ = 0;
+    }
+
+    // 移动赋值
+    MyVector& operator=(MyVector&& o) noexcept {
+        if (this != &o) {
+            delete[] data_;       // 释放旧资源
+            data_ = o.data_;      // 偷走新资源
+            size_ = o.size_;
+            o.data_ = nullptr;    // 掏空原对象
+            o.size_ = 0;
+        }
+        return *this;
+    }
+};
+```
+
+**std::move**：
+```cpp
+// std::move 不移动，只是类型转换（左值 → 右值引用）
+std::string s1 = "hello";
+std::string s2 = std::move(s1);  // 强制移动，s1 被掏空
+
+// ⚠️ 移动后不要再用原对象
+// std::cout << s1;  // 危险
+```
+
+**何时用 std::move**：
+```cpp
+// ✅ 转移所有权
+std::string s2 = std::move(s1);
+
+// ✅ 容器中移动元素
+vec.push_back(std::move(s));
+
+// ❌ 返回局部变量时不要用（妨碍 RVO）
+std::vector<int> foo() {
+    std::vector<int> vec(1000);
+    return std::move(vec);  // ❌ 错误：破坏 RVO
+}
+
+// ✅ 正确：让编译器自动优化
+std::vector<int> foo() {
+    std::vector<int> vec(1000);
+    return vec;  // 编译器自动优化（RVO 或移动）
+}
+```
+
+**RVO（Return Value Optimization）**：
+```
+编译器的自动优化：直接在目标位置构造对象，零拷贝零移动
+
+性能排序：
+RVO/NRVO（编译器优化） > 移动 > 拷贝
+   O(0)               O(1)   O(n)
+   零开销              偷指针   复制数据
 ```
 
 **引用类型**：
 ```cpp
-T&                // 左值引用
-const T&          // 万能引用（函数参数首选）
-T&&               // 右值引用（移动语义）
+T&                // 左值引用（绑定有名对象）
+const T&          // 常量引用（函数参数首选）
+T&&               // 右值引用（移动语义，绑定临时对象）
 ```
 
-**要点**：
-- 移动 = 偷资源 O(1)，拷贝 = 复制数据 O(n)
-- 返回值自动移动，不写 std::move
-- 移动后的对象别再用
-- 移动函数标记 noexcept
+**关键要点**：
+- 移动 = 转移所有权 O(1)，拷贝 = 复制数据 O(n)
+- 返回局部变量自动移动/RVO，**不要写 std::move**
+- 移动后的对象不要再用
+- 移动函数必须标记 `noexcept`（否则 vector 扩容不用移动）
+- const 对象不能移动（会退化为拷贝）
+
+**常见陷阱**：
+```cpp
+// ❌ 使用被移动的对象
+std::string s2 = std::move(s1);
+std::cout << s1;  // 危险
+
+// ❌ const 对象不能移动
+const std::string s = "hello";
+auto s2 = std::move(s);  // 实际是拷贝
+
+// ❌ 返回时用 std::move
+return std::move(vec);  // 妨碍 RVO
+
+// ❌ 移动构造缺少 noexcept
+MyClass(MyClass&& o) { }  // vector 扩容时不会用移动
+```
 
 ---
 

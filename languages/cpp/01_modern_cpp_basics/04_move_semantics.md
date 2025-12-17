@@ -89,15 +89,18 @@ std::string s2 = std::move(s1);
 vec.push_back(std::move(s));
 
 // ❌ 返回语句中不要用（妨碍 RVO）
+// RVO = Return Value Optimization（返回值优化）
+// 编译器的自动优化：直接在目标位置构造对象，零拷贝零移动
 std::vector<int> foo() {
     std::vector<int> vec(1000);
-    return std::move(vec);  // ❌ 错误
+    return std::move(vec);  // ❌ 错误：破坏 RVO，退化为移动（更慢）
 }
 
 // ✅ 正确：让编译器优化
 std::vector<int> foo() {
     std::vector<int> vec(1000);
     return vec;  // 编译器自动优化（RVO 或移动）
+               // RVO：直接在调用者位置构造，零开销
 }
 ```
 
