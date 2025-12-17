@@ -152,7 +152,20 @@ public:
 
 ## Rule of 0/3/5
 
-**Rule of 0（推荐）**：能用标准库就什么都不写
+> **命名说明**：这个名字包含了三个不同时代的规则
+> - **Rule of 3**：C++98/03 时代（拷贝时代）
+> - **Rule of 5**：C++11 引入移动语义后
+> - **Rule of 0**：现代 C++ 最佳实践
+>
+> **实际使用**：只需记住 **Rule of 0 or 5**
+> - 要么用标准库（0 个特殊函数）
+> - 要么自己管理资源（5 个全写）
+> - **Rule of 3 已过时，仅供理解老代码**
+
+### Rule of 0（推荐）✅
+
+**能用标准库就什么都不写**
+
 ```cpp
 class Good {
     std::vector<int> data_;        // 自动管理
@@ -161,7 +174,15 @@ class Good {
 };
 ```
 
-**Rule of 5**：自己管理资源时，必须定义 5 个函数
+**为什么推荐？**
+- 标准库已经正确实现了资源管理
+- 不会写错
+- 代码简洁
+
+### Rule of 5（自己管理资源时）
+
+**如果直接持有裸指针/文件句柄等资源，必须定义 5 个函数**
+
 ```cpp
 class MyResource {
 public:
@@ -173,23 +194,78 @@ public:
 };
 ```
 
-## 标准库 RAII 类
+**为什么是 5 个？**
+- 只写析构 → 拷贝时浅拷贝 → 重复释放崩溃
+- 不写移动 → 退化为拷贝 → 性能差
+
+### Rule of 3（已过时，仅供理解）
+
+**C++11 之前没有移动语义，只需 3 个函数**
 
 ```cpp
-// 内存管理
-std::unique_ptr<int> p = std::make_unique<int>(10);
-std::vector<int> vec(1000);
+class OldStyle {
+    ~OldStyle();                           // 1. 析构
+    OldStyle(const OldStyle&);             // 2. 拷贝构造
+    OldStyle& operator=(const OldStyle&);  // 3. 拷贝赋值
+};
+```
 
-// 文件管理
-std::ifstream file("data.txt");  // 自动打开和关闭
+**现代 C++ 不要用！** 因为缺少移动函数会导致性能问题。
 
-// 锁管理
+## 标准库 RAII 类
+
+> **标准库几乎所有类都是 RAII 的！** 以下是常见示例：
+
+```cpp
+// === 1. 内存管理 ===
+std::unique_ptr<int> p = std::make_unique<int>(10);  // 独占所有权
+std::shared_ptr<int> sp = std::make_shared<int>(20); // 共享所有权
+std::vector<int> vec(1000);                          // 动态数组
+std::string str = "hello";                           // 字符串
+std::array<int, 5> arr;                              // 固定大小数组（栈上）
+std::deque<int> deq;                                 // 双端队列
+std::list<int> lst;                                  // 链表
+std::map<int, std::string> m;                        // 映射
+std::set<int> s;                                     // 集合
+
+// === 2. 文件/流管理 ===
+std::ifstream file("data.txt");     // 输入文件流（自动关闭）
+std::ofstream out("output.txt");    // 输出文件流
+std::fstream fs("file.txt");        // 读写文件流
+std::stringstream ss;               // 字符串流
+
+// === 3. 线程同步（锁管理）===
 std::mutex mtx;
 {
-    std::lock_guard<std::mutex> lock(mtx);  // 自动加锁
-    // 临界区
-}  // 自动解锁
+    std::lock_guard<std::mutex> lock(mtx);        // 自动加锁/解锁
+    std::unique_lock<std::mutex> ulock(mtx);      // 更灵活的锁
+    std::shared_lock<std::shared_mutex> slock(m); // 读锁（C++17）
+    std::scoped_lock lock(mtx1, mtx2);            // 多锁（C++17）
+}
+
+// === 4. 线程管理 ===
+std::thread t([]{ /* work */ });  // 线程对象
+t.join();  // 必须 join 或 detach，否则析构时崩溃
+
+std::jthread jt([]{ /* work */ }); // C++20，自动 join
+
+// === 5. 异常安全的资源管理 ===
+std::optional<int> opt = 42;            // 可能有值
+std::variant<int, std::string> var = 5; // 类型安全的 union
+
+// === 6. 函数对象 ===
+std::function<int(int)> f = [](int x) { return x * 2; };
+
+// === 7. 正则表达式 ===
+std::regex pattern(R"(\d+)");
+
+// === 8. 时间管理 ===
+auto start = std::chrono::steady_clock::now();
+// ... 代码 ...
+auto end = std::chrono::steady_clock::now();
 ```
+
+**核心原则**：标准库的类型都遵循 RAII，构造时分配资源，析构时自动释放
 
 ## 关键原则
 
@@ -198,6 +274,62 @@ std::mutex mtx;
 3. **优先用标准库**（Rule of 0）
 4. **禁止拷贝或正确实现拷贝**
 5. **移动构造函数要 `noexcept`**
+
+### 关于 `noexcept` 的重要说明
+
+> **⚠️ `noexcept` 是程序员的承诺，不是编译器的检查！**
+
+```cpp
+// 编译能通过，但运行时会崩溃
+void foo() noexcept {
+    throw std::runtime_error("oops");  // ✅ 编译通过
+    // ❌ 运行时调用 std::terminate，程序直接终止（不是异常）
+}
+```
+
+**为什么要标记 `noexcept`？**
+
+1. **让容器敢用移动而不是拷贝**
+   ```cpp
+   class MyClass {
+       MyClass(MyClass&&) noexcept;  // 有 noexcept
+   };
+
+   std::vector<MyClass> vec;
+   vec.push_back(...);  // 扩容时用移动（快）✅
+   ```
+
+   ```cpp
+   class Slow {
+       Slow(Slow&&);  // 没有 noexcept
+   };
+
+   std::vector<Slow> vec;
+   vec.push_back(...);  // 扩容时用拷贝（慢）❌
+   ```
+
+   **原因**：如果移动可能抛异常，`vector` 扩容到一半失败会导致数据损坏，所以只能用安全但慢的拷贝。
+
+2. **析构函数默认就是 `noexcept`**
+   - 如果在异常处理时析构又抛异常 → 两个异常同时存在 → C++ 无法处理 → 程序终止
+   - 所以析构函数**绝对不能**抛异常
+
+**如何保证不抛异常？**
+
+```cpp
+// ✅ 安全的操作
+delete ptr;           // 不抛异常
+fclose(file);         // 不抛异常
+ptr = nullptr;        // 不抛异常
+基本类型赋值          // 不抛异常
+
+// ❌ 危险的操作（不要在 noexcept 函数里做）
+new int;              // 内存不足会抛异常
+vec.push_back();      // 扩容失败会抛异常
+throw ...;            // 显式抛出异常
+```
+
+**记住**：在析构和移动函数里只做简单的指针/资源操作，自然就不会抛异常。
 
 ## RAII vs 手动管理
 
