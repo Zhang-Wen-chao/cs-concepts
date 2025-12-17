@@ -142,20 +142,70 @@ void observe(const std::shared_ptr<T>& p); // 不改变引用计数
 
 ## 03. 容器
 
+**选择指南**（90% 情况）：
 ```cpp
-vector           // 默认选择
+vector           // 默认选择（顺序存储，随机访问）
 unordered_map    // 键值查找 O(1)
 unordered_set    // 去重 O(1)
 ```
 
-**操作**：
-```cpp
-v.push_back(x);
-m["key"] = value;
-s.insert(x);
-if (m.count(key)) {}
-for (auto& x : c) {}
+**决策树**：
 ```
+需要键值对？
+  是 → unordered_map
+  否 → 需要去重？
+         是 → unordered_set
+         否 → vector（默认）
+```
+
+**vector（默认选择）**：
+```cpp
+std::vector<int> v = {1, 2, 3};
+v.push_back(4);          // 末尾添加（构造临时对象再移动）
+v.emplace_back(5);       // 末尾原地构造（更快，避免移动）
+v[0] = 10;               // 随机访问 O(1)
+v.reserve(1000);         // 预留容量，避免重复扩容
+v.size();                // 当前元素数量
+v.empty();               // 是否为空
+v.clear();               // 清空
+```
+
+**unordered_map（键值查找）**：
+```cpp
+std::unordered_map<std::string, int> m;
+m["apple"] = 5;          // 插入/修改
+int val = m["apple"];    // 访问（不存在会创建默认值）
+m.erase("apple");        // 删除
+if (m.count("key")) {}   // 检查是否存在（返回 0 或 1）
+// C++20: if (m.contains("key")) {}
+```
+
+**unordered_set（去重）**：
+```cpp
+std::unordered_set<int> s = {1, 2, 3, 2, 1};  // 自动去重
+s.insert(4);             // 插入
+s.erase(2);              // 删除
+if (s.count(3)) {}       // 检查是否存在
+```
+
+**通用操作**：
+```cpp
+// 遍历（适用所有容器）
+for (const auto& item : container) { /* ... */ }
+
+// 大小
+container.size();
+container.empty();
+container.clear();
+```
+
+**时间复杂度**：
+| 容器 | 查找 | 插入 | 删除 |
+|-----|------|------|------|
+| vector | O(n) | O(1)尾部 | O(1)尾部 |
+| unordered_map | O(1) | O(1) | O(1) |
+| unordered_set | O(1) | O(1) | O(1) |
+| map（有序） | O(log n) | O(log n) | O(log n) |
 
 ---
 
