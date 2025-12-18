@@ -110,7 +110,8 @@ cs-concepts/
 
 - 🔧 **TensorFlow 深度学习框架**（2025-12-17 开始）
   - ✅ 01 - 核心概念：张量、计算图、自动微分、tf.GradientTape（2025-12-17）
-  - 🔄 02 - Keras API：Sequential/Functional/Subclassing 三种建模方式（待学习）
+  - ✅ 02 - Keras API：Sequential/Functional/Subclassing 三种建模方式、模型编译训练评估、回调函数（2025-12-17）
+  - 🔄 03 - 数据管道 tf.data（待学习）
   - 目标：掌握 TensorFlow 进行深度学习实践
   - → [TensorFlow 学习笔记](applications/artificial-intelligence/frameworks/tensorflow/)
 
