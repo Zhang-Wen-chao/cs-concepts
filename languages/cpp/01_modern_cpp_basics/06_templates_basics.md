@@ -51,26 +51,66 @@ add(3, 1.5);  // T=int, U=double, 返回 double
 
 ## 常见陷阱
 
-```cpp
-// ❌ 模板定义必须在头文件
-// foo.cpp
-template<typename T>
-T add(T a, T b) { return a + b; }  // 链接错误
+### 陷阱 1：模板定义和使用分离
 
-// ✅ 模板定义放头文件
-// foo.h
+**❌ 错误：模板定义在 .cpp，使用在另一个文件**
+```cpp
+// foo.cpp（定义）
 template<typename T>
 T add(T a, T b) { return a + b; }
 
+// main.cpp（使用）
+template<typename T>
+T add(T a, T b);  // 只有声明
+
+int main() {
+    add(3, 5);  // ❌ 链接错误！编译器在 main.cpp 看不到定义
+}
+```
+
+**✅ 正确：模板定义放头文件**
+```cpp
+// foo.h（声明 + 定义）
+template<typename T>
+T add(T a, T b) { return a + b; }
+
+// main.cpp（使用）
+#include "foo.h"
+int main() {
+    add(3, 5);  // ✅ 编译器通过 #include 看到完整定义
+}
+```
+
+**原因**：模板是"代码生成配方"，编译器在使用时必须看到完整定义才能生成代码。
+
+**例外**：如果定义和使用在同一个 `.cpp` 文件，不需要头文件：
+```cpp
+// single_file.cpp
+template<typename T>
+T add(T a, T b) { return a + b; }
+
+int main() {
+    add(3, 5);  // ✅ 同一个文件，可以
+}
+```
+
+---
+
+### 陷阱 2：类型推导失败
+
+```cpp
 // ❌ 类型推导失败
 template<typename T>
 T max(T a, T b) { return a > b ? a : b; }
 max(3, 1.5);  // 错误：T 既是 int 又是 double
 
-// ✅ 显式指定或用 auto
+// ✅ 显式指定类型
 max<double>(3, 1.5);
+
+// ✅ 使用多个类型参数
 template<typename T, typename U>
 auto max(T a, U b) { return a > b ? a : b; }
+max(3, 1.5);  // T=int, U=double
 ```
 
 ## 实用示例
