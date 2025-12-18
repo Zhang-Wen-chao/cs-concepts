@@ -342,42 +342,159 @@ MyClass(MyClass&& o) { }  // vector 扩容时不会用移动
 
 ## 05. Lambda
 
+**基本语法**：
 ```cpp
 [捕获](参数) { 函数体 }
 ```
 
-**捕获**：`[]` `[x]` `[&x]` `[=]` `[&]`
-
-**示例**：
+**捕获列表**：
 ```cpp
-std::sort(v.begin(), v.end(), [](int a, int b) { return a > b; });
-auto it = std::find_if(v.begin(), v.end(), [](int x) { return x > 5; });
+int x = 10, y = 20;
+
+[]          // 不捕获
+[x]         // 按值捕获 x（拷贝，默认 const）
+[&x]        // 按引用捕获 x（可修改外部变量）
+[=]         // 按值捕获所有（安全）
+[&]         // 按引用捕获所有
+[=, &x]     // 默认按值，x 按引用
+[&, x]      // 默认按引用，x 按值
+
+// 示例
+auto f1 = [x]() { return x + 1; };     // x 是拷贝
+auto f2 = [&x]() { x = 100; };         // x 是引用，修改外部 x
+auto f3 = [=]() { return x + y; };     // 捕获所有变量
 ```
+
+**常用场景**：
+```cpp
+std::vector<int> v = {3, 1, 4, 1, 5};
+
+// 1. 排序（降序）
+std::sort(v.begin(), v.end(), [](int a, int b) { return a > b; });
+
+// 2. 查找
+auto it = std::find_if(v.begin(), v.end(), [](int x) { return x > 3; });
+
+// 3. 计数
+int count = std::count_if(v.begin(), v.end(), [](int x) { return x % 2 == 0; });
+
+// 4. 遍历
+std::for_each(v.begin(), v.end(), [](int x) { std::cout << x << " "; });
+
+// 5. 带捕获的使用
+int threshold = 5;
+auto count2 = std::count_if(v.begin(), v.end(),
+                            [threshold](int x) { return x > threshold; });
+```
+
+**mutable 关键字**：
+```cpp
+int x = 10;
+// 默认：按值捕获是 const，不能修改
+// auto f = [x]() { x = 20; };  // 编译错误
+
+auto f1 = [x]() mutable { x = 20; };  // mutable：修改拷贝（不影响外部）
+f1();  // x 还是 10
+
+auto f2 = [&x]() { x = 20; };  // 引用捕获：修改外部
+f2();  // x 变成 20
+```
+
+**常见陷阱**：
+```cpp
+// ❌ 悬空引用：捕获引用后延迟调用
+auto make_lambda() {
+    int x = 10;
+    return [&x]() { return x; };  // 危险：x 已销毁
+}
+
+// ✅ 按值捕获（安全）
+auto make_lambda() {
+    int x = 10;
+    return [x]() { return x; };  // 安全：拷贝了 x
+}
+```
+
+**要点**：
+- 默认用 `[=]` 按值捕获（安全）
+- 需要修改外部变量用 `[&]`
+- 立即使用的小函数用 lambda
+- 不要捕获引用后延迟调用（悬空引用）
+- `mutable` 只修改 lambda 内部的拷贝
 
 ---
 
 ## 06. 模板
 
-```cpp
-template<typename T>           // 函数模板（自动推导）
-template<typename T> class Box // 类模板（显式指定）
-template<typename... Args>     // 变长模板
-```
+**核心思想**：一次编写，处处复用。编译器为每种类型生成代码。
 
-**示例**：
+**函数模板（自动推导类型）**：
 ```cpp
+template<typename T>
 T max(T a, T b) { return a > b ? a : b; }
-max(3, 5);  // 自动推导 T = int
 
-Box<int> b(42);  // 类模板必须显式指定
+max(3, 5);        // 自动推导 T = int
+max(1.5, 2.5);    // 自动推导 T = double
+max<int>(3, 5);   // 显式指定类型
 ```
 
----
+**类模板（必须显式指定类型）**：
+```cpp
+template<typename T>
+class Box {
+    T value_;
+public:
+    Box(T v) : value_(v) {}
+    T get() const { return value_; }
+};
 
-## 写代码时记住
+Box<int> b1(42);           // 必须指定类型
+Box<std::string> b2("hi"); // 不能自动推导
+```
 
-1. 永远不手动 new/delete
-2. 函数参数用 const&
-3. 默认用 vector
-4. 移动函数标记 noexcept
-5. 返回值别写 std::move
+**多个模板参数**：
+```cpp
+template<typename T, typename U>
+auto add(T a, U b) { return a + b; }
+
+add(3, 1.5);  // T=int, U=double, 返回 double
+```
+
+**变长模板（可变参数）**：
+```cpp
+template<typename... Args>     // Args 是参数包
+void print(Args... args) {
+    (std::cout << ... << args) << "\n";  // C++17 折叠表达式
+}
+
+print(1, 2, 3, "hello");  // 接受任意数量参数
+```
+
+**常见陷阱**：
+```cpp
+// ❌ 模板定义在 .cpp，使用在另一个文件
+// foo.cpp
+template<typename T>
+T add(T a, T b) { return a + b; }
+// main.cpp
+add(3, 5);  // 链接错误！
+
+// ✅ 模板定义必须在头文件（或同一文件）
+// foo.h
+template<typename T>
+T add(T a, T b) { return a + b; }
+
+// ❌ 类型推导失败
+template<typename T>
+T max(T a, T b) { return a > b ? a : b; }
+max(3, 1.5);  // 错误：T 既是 int 又是 double
+
+// ✅ 显式指定或用多个类型参数
+max<double>(3, 1.5);
+```
+
+**要点**：
+- 函数模板自动推导，类模板必须显式指定
+- 模板定义必须在头文件（多文件项目）
+- 标准库大量使用模板（`vector<T>`, `map<K,V>` 等）
+- 简单场景用模板，复杂场景考虑其他方案
