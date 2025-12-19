@@ -1,6 +1,6 @@
 // 互斥锁实践：演示数据竞争和锁的使用
-// 编译：g++ -std=c++17 -pthread 02_mutex_locks.cpp -o mutex_demo
-// 运行：./mutex_demo
+// 编译：g++ -std=c++17 -pthread 02_mutex_locks.cpp -o mutex_locks
+// 运行：./mutex_locks
 //
 // 目的：演示为什么需要锁，以及如何正确使用 RAII 锁
 
