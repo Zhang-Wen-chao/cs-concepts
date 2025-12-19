@@ -19,9 +19,10 @@ tensorflow/
 
 ## 🎯 学习目标
 
-- [ ] 理解 TensorFlow 的核心概念（张量、计算图、会话）
-- [ ] 掌握 Keras API 进行快速模型开发
-- [ ] 学会使用 tf.data 构建高效数据管道
+- [x] 理解 TensorFlow 的核心概念（张量、计算图、自动微分）✅
+- [x] 掌握 Keras API 进行快速模型开发 ✅
+- [x] 学会使用 tf.data 构建高效数据管道 ✅
+- [x] 掌握自定义训练循环、混合精度训练、梯度优化 ✅
 - [ ] 实践常见深度学习模型（CNN、RNN 等）
 - [ ] 了解模型保存、加载和部署
 
@@ -33,21 +34,26 @@ tensorflow/
 
 ## 📖 学习路径
 
-### 第一阶段：基础概念
-1. **张量操作** - 理解 TensorFlow 的基本数据结构
-2. **自动微分** - tf.GradientTape 的使用
-3. **计算图** - 静态图 vs 动态图（Eager Execution）
+### 第一阶段：基础概念 ✅ 已完成
+1. ✅ **张量操作** - 理解 TensorFlow 的基本数据结构
+2. ✅ **自动微分** - tf.GradientTape 的使用
+3. ✅ **计算图** - 静态图 vs 动态图（Eager Execution）
 
-### 第二阶段：Keras API
-1. **Sequential API** - 线性堆叠模型
-2. **Functional API** - 复杂模型架构
-3. **Model Subclassing** - 自定义模型类
+### 第二阶段：Keras API ✅ 已完成
+1. ✅ **Sequential API** - 线性堆叠模型
+2. ✅ **Functional API** - 复杂模型架构
+3. ✅ **Model Subclassing** - 自定义模型类
 
-### 第三阶段：进阶主题
-1. **自定义层和损失函数**
-2. **tf.data 数据管道**
-3. **分布式训练**
-4. **模型部署（TFLite、TF Serving）**
+### 第三阶段：数据管道与训练优化 ✅ 已完成
+1. ✅ **tf.data 数据管道** - 高效数据加载与预处理
+2. ✅ **自定义训练循环** - 手动控制训练过程
+3. ✅ **混合精度训练** - 性能优化
+4. ✅ **学习率调度** - Warm-up、余弦衰减等策略
+
+### 第四阶段：实践与部署（待完成）
+1. 实践常见深度学习模型
+2. 分布式训练
+3. 模型部署（TFLite、TF Serving）
 
 ## 🔄 与其他内容的关系
 
