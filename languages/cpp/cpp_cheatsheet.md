@@ -674,3 +674,149 @@ std::vector<int>& get_data() {
 - 固定加锁顺序（避免死锁）
 - 用 RAII 管理锁（永远不要手动 lock/unlock）
 - 多个锁用 `scoped_lock`（C++17）
+
+---
+
+## 09. 条件变量
+
+**核心问题**：线程如何高效等待条件？（不用忙等）
+
+**基本用法**：
+```cpp
+std::mutex mtx;
+std::condition_variable cv;
+bool ready = false;
+
+// 等待线程
+std::unique_lock<std::mutex> lock(mtx);
+cv.wait(lock, []{ return ready; });  // 阻塞，直到 ready 为 true
+
+// 通知线程
+{
+    std::lock_guard<std::mutex> lock(mtx);
+    ready = true;
+}
+cv.notify_one();  // 唤醒一个等待的线程
+```
+
+**wait 的行为**：
+1. 检查条件，为真立即返回
+2. 为假 → 解锁 mutex，线程休眠（不占 CPU）
+3. 被唤醒 → 重新加锁，再次检查条件
+4. 条件为真才返回
+
+**为什么必须用 unique_lock？**
+```cpp
+// ❌ 不能用 lock_guard
+std::lock_guard<std::mutex> lock(mtx);
+cv.wait(lock);  // 编译错误
+
+// ✅ 必须用 unique_lock
+std::unique_lock<std::mutex> lock(mtx);
+cv.wait(lock);  // wait 需要临时解锁
+```
+
+**wait 的三种形式**：
+```cpp
+// 1. 带谓词（推荐，自动处理虚假唤醒）
+cv.wait(lock, []{ return ready; });
+
+// 2. 不带谓词（需要手动循环）
+while (!ready) {
+    cv.wait(lock);
+}
+
+// 3. 带超时
+bool result = cv.wait_for(lock, std::chrono::seconds(1), []{ return ready; });
+if (result) {
+    // 条件满足
+} else {
+    // 超时
+}
+```
+
+**notify_one vs notify_all**：
+```cpp
+cv.notify_one();   // 唤醒一个线程（单消费者）
+cv.notify_all();   // 唤醒所有线程（多消费者）
+```
+
+**生产者-消费者模型**：
+```cpp
+std::queue<int> buffer;
+std::mutex mtx;
+std::condition_variable cv;
+const int MAX_SIZE = 10;
+
+// 生产者
+void producer() {
+    std::unique_lock<std::mutex> lock(mtx);
+    cv.wait(lock, []{ return buffer.size() < MAX_SIZE; });  // 等待不满
+    buffer.push(data);
+    lock.unlock();
+    cv.notify_all();  // 通知消费者
+}
+
+// 消费者
+void consumer() {
+    std::unique_lock<std::mutex> lock(mtx);
+    cv.wait(lock, []{ return !buffer.empty(); });  // 等待不空
+    int data = buffer.front();
+    buffer.pop();
+    lock.unlock();
+    cv.notify_all();  // 通知生产者
+}
+```
+
+**虚假唤醒**：
+```cpp
+// ❌ 危险：不检查条件
+cv.wait(lock);
+// 可能虚假唤醒，ready 不一定为 true
+
+// ✅ 安全：总是用谓词
+cv.wait(lock, []{ return ready; });
+```
+
+**通知时机**：
+```cpp
+// ✅ 好：先解锁再通知（性能更好）
+{
+    std::lock_guard<std::mutex> lock(mtx);
+    ready = true;
+}  // 解锁
+cv.notify_one();
+
+// ⚠️ 可以但不推荐：持有锁时通知
+{
+    std::lock_guard<std::mutex> lock(mtx);
+    ready = true;
+    cv.notify_one();  // 等待线程被唤醒，但立即被锁阻塞
+}
+```
+
+**常见陷阱**：
+```cpp
+// ❌ 忘记检查条件（虚假唤醒）
+cv.wait(lock);
+int value = buffer.front();  // buffer 可能为空
+
+// ❌ 用 lock_guard
+std::lock_guard<std::mutex> lock(mtx);
+cv.wait(lock);  // 编译错误
+
+// ❌ 修改条件后不通知
+{
+    std::lock_guard<std::mutex> lock(mtx);
+    ready = true;
+}
+// 忘记 cv.notify_one()，等待线程永远阻塞
+```
+
+**要点**：
+- 条件变量用于线程间等待/通知
+- 必须配合 `unique_lock` 使用
+- 总是用谓词检查条件（避免虚假唤醒）
+- 修改条件后立即通知
+- 先解锁再通知（性能更好）
+- 单消费者用 `notify_one`，多消费者用 `notify_all`
