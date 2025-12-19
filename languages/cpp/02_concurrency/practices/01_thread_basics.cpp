@@ -1,6 +1,6 @@
 // 线程基础实践：多线程并行求和
-// 编译：g++ -std=c++17 -pthread 01_thread_basics.cpp -o demo
-// 运行：./demo
+// 编译：g++ -std=c++17 -pthread 01_thread_basics.cpp -o thread_basics
+// 运行：./thread_basics
 //
 // 目的：演示如何创建多个线程并行处理数据
 
