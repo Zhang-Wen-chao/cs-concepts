@@ -498,3 +498,179 @@ max<double>(3, 1.5);
 - 模板定义必须在头文件（多文件项目）
 - 标准库大量使用模板（`vector<T>`, `map<K,V>` 等）
 - 简单场景用模板，复杂场景考虑其他方案
+
+---
+
+> 阶段 2：并发编程 🔄
+
+## 07. 线程基础
+
+**核心概念**：线程 = 独立的执行流，共享进程内存
+
+**创建线程**：
+```cpp
+std::thread t(函数);          // 函数
+std::thread t([]{...});       // Lambda（推荐）
+std::thread t(Worker{});      // 函数对象
+```
+
+**join vs detach**：
+```cpp
+t.join();    // 等待线程结束（推荐）
+t.detach();  // 分离线程（慎用，易悬空引用）
+```
+
+**传递参数**：
+```cpp
+std::thread t(func, arg1, arg2);      // 按值
+std::thread t(func, std::ref(var));   // 按引用（必须用 std::ref）
+std::thread t([x]{...});              // Lambda 捕获
+```
+
+**线程信息**：
+```cpp
+std::thread::hardware_concurrency();  // CPU 核心数
+std::this_thread::get_id();           // 当前线程 ID
+std::this_thread::sleep_for(std::chrono::seconds(1));  // 休眠
+```
+
+**RAII 线程管理**：
+```cpp
+class ThreadGuard {
+    std::thread& t_;
+public:
+    explicit ThreadGuard(std::thread& t) : t_(t) {}
+    ~ThreadGuard() { if (t_.joinable()) t_.join(); }
+    ThreadGuard(const ThreadGuard&) = delete;
+    ThreadGuard& operator=(const ThreadGuard&) = delete;
+};
+
+// C++20
+std::jthread t([]{...});  // 析构时自动 join
+```
+
+**常见陷阱**：
+```cpp
+// ❌ 忘记 join/detach
+std::thread t([]{...});
+// 离开作用域 → std::terminate，程序崩溃
+
+// ❌ 引用捕获 + detach
+int x = 10;
+std::thread t([&x]{...});
+t.detach();  // x 销毁，悬空引用
+
+// ❌ 重复 join
+t.join();
+t.join();  // 崩溃
+```
+
+**要点**：
+- 线程创建后必须 join 或 detach
+- detach 时按值捕获局部变量
+- 线程数 ≈ CPU 核心数（过多性能下降）
+- 用 RAII 管理线程（避免忘记 join）
+
+---
+
+## 08. 互斥锁
+
+**核心问题**：多线程同时修改共享数据 → 数据竞争
+
+**基本用法**：
+```cpp
+std::mutex mtx;
+int counter = 0;
+
+mtx.lock();
+counter++;
+mtx.unlock();
+```
+
+**三种 RAII 锁**：
+```cpp
+// 1. lock_guard（推荐，90%情况）
+{
+    std::lock_guard<std::mutex> lock(mtx);  // 构造时加锁
+    counter++;
+}  // 析构时自动解锁
+
+// 2. unique_lock（灵活，可手动控制）
+std::unique_lock<std::mutex> lock(mtx);
+lock.unlock();  // 手动解锁
+// ... 不需要锁的操作 ...
+lock.lock();    // 再次加锁
+
+// 3. scoped_lock（C++17，多个锁）
+std::scoped_lock lock(mtx1, mtx2);  // 同时锁定，避免死锁
+```
+
+**锁的选择**：
+- 简单场景 → `lock_guard`
+- 需要手动控制或配合条件变量 → `unique_lock`
+- 多个锁 → `scoped_lock`（C++17）
+
+**死锁问题**：
+```cpp
+// ❌ 死锁
+void thread1() {
+    std::lock_guard<std::mutex> lock1(mtx1);  // 持有 mtx1
+    std::lock_guard<std::mutex> lock2(mtx2);  // 等待 mtx2
+}
+void thread2() {
+    std::lock_guard<std::mutex> lock2(mtx2);  // 持有 mtx2
+    std::lock_guard<std::mutex> lock1(mtx1);  // 等待 mtx1
+}
+// 互相等待，永远阻塞
+
+// ✅ 解决：固定加锁顺序
+void both_threads() {
+    std::lock_guard<std::mutex> lock1(mtx1);  // 都先 mtx1
+    std::lock_guard<std::mutex> lock2(mtx2);  // 都后 mtx2
+}
+
+// ✅ 解决：用 scoped_lock
+std::scoped_lock lock(mtx1, mtx2);  // 自动避免死锁
+```
+
+**性能建议**：
+```cpp
+// ✅ 好：锁的范围小
+{
+    std::lock_guard<std::mutex> lock(mtx);
+    data.push_back(value);  // 只锁关键操作
+}
+expensive_computation();  // 不需要锁
+
+// ❌ 坏：锁的范围大
+{
+    std::lock_guard<std::mutex> lock(mtx);
+    data.push_back(value);
+    expensive_computation();  // 浪费，其他线程等待
+}
+```
+
+**常见陷阱**：
+```cpp
+// ❌ 忘记加锁
+counter++;  // 数据竞争
+
+// ❌ 手动 lock/unlock（易忘记）
+mtx.lock();
+if (error) return;  // 忘记 unlock，死锁
+mtx.unlock();
+
+// ❌ 返回被保护数据的引用
+std::vector<int>& get_data() {
+    std::lock_guard<std::mutex> lock(mtx);
+    return vec;  // 锁解除，但引用还在外面用
+}
+```
+
+**要点**：
+- 多线程访问共享数据必须加锁
+- 优先用 `lock_guard`（90%情况）
+- 锁的范围尽量小（性能）
+- 固定加锁顺序（避免死锁）
+- 用 RAII 管理锁（永远不要手动 lock/unlock）
+- 多个锁用 `scoped_lock`（C++17）
