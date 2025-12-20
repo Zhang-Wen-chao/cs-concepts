@@ -1007,3 +1007,201 @@ std::atomic<int*> ptr(nullptr);
 - CAS 是最强大的原子操作，用于无锁数据结构
 - 简单操作用原子，复杂操作用锁
 - 内存顺序：初学者用默认，性能关键再优化
+
+---
+
+## 11. 异步编程
+
+**核心概念**：异步 = 不等待结果，继续做其他事
+
+**std::async - 启动异步任务（最简单）**：
+```cpp
+#include <future>
+
+// 启动异步任务，立即返回
+std::future<int> fut = std::async([]{
+    return 42;
+});
+
+// 主线程继续做其他事...
+
+// 需要时获取结果（阻塞）
+int result = fut.get();
+```
+
+**启动策略**：
+```cpp
+// 1. async：立即创建新线程
+auto fut1 = std::async(std::launch::async, task);
+
+// 2. deferred：延迟执行（调用 get 时才执行）
+auto fut2 = std::async(std::launch::deferred, task);
+
+// 3. 默认：由实现决定
+auto fut3 = std::async(task);
+```
+
+**std::future - 获取结果**：
+```cpp
+std::future<int> fut = std::async([]{ return 42; });
+
+// 获取结果（只能调用一次）
+int result = fut.get();  // 阻塞，直到完成
+// fut.get();  // ❌ 错误：不能重复调用
+
+// 等待（不获取结果）
+fut.wait();  // 阻塞
+
+// 等待一段时间
+auto status = fut.wait_for(std::chrono::seconds(1));
+if (status == std::future_status::ready) {
+    // 任务完成
+} else if (status == std::future_status::timeout) {
+    // 超时
+}
+```
+
+**std::promise - 手动设置结果**：
+```cpp
+std::promise<int> prom;
+std::future<int> fut = prom.get_future();
+
+// 生产者线程
+std::thread t([&prom]{
+    prom.set_value(42);  // 设置结果
+});
+
+// 消费者线程
+int result = fut.get();  // 阻塞，直到 promise 设置值
+
+t.join();
+```
+
+**promise/future 关系**：
+- `promise` = 生产者（设置结果）
+- `future` = 消费者（获取结果）
+- 它们是一对
+
+**设置异常**：
+```cpp
+std::promise<int> prom;
+std::future<int> fut = prom.get_future();
+
+try {
+    throw std::runtime_error("错误");
+} catch (...) {
+    prom.set_exception(std::current_exception());
+}
+
+try {
+    fut.get();  // 抛出异常
+} catch (const std::exception& e) {
+    std::cout << e.what();
+}
+```
+
+**std::packaged_task - 包装函数**：
+```cpp
+// 包装函数
+std::packaged_task<int(int, int)> task([](int a, int b) {
+    return a + b;
+});
+
+// 获取 future
+std::future<int> fut = task.get_future();
+
+// 在线程中执行
+std::thread t(std::move(task), 10, 20);
+
+// 获取结果
+int result = fut.get();  // 30
+
+t.join();
+```
+
+**std::shared_future - 多个消费者**：
+```cpp
+std::future<int> fut = std::async([]{ return 42; });
+std::shared_future<int> sf = fut.share();  // 转换
+
+// 多个线程都可以获取结果
+std::thread t1([sf]{ std::cout << sf.get(); });
+std::thread t2([sf]{ std::cout << sf.get(); });
+std::thread t3([sf]{ std::cout << sf.get(); });
+
+t1.join();
+t2.join();
+t3.join();
+```
+
+**并行计算**：
+```cpp
+std::vector<std::future<int>> futures;
+
+for (int i = 0; i < 10; ++i) {
+    futures.push_back(std::async(std::launch::async, [i]{
+        return compute(i);
+    }));
+}
+
+// 收集结果
+for (auto& fut : futures) {
+    int result = fut.get();
+}
+```
+
+**async vs thread**：
+```cpp
+// ✅ async（推荐，简洁）
+auto fut = std::async([]{ return 42; });
+int result = fut.get();
+
+// ❌ thread（复杂）
+int result;
+std::thread t([&result]{ result = 42; });
+t.join();
+```
+
+**选择**：
+| 场景 | 使用 |
+|------|------|
+| 简单异步任务 | `async` |
+| 需要精确控制线程 | `thread` |
+| 手动控制结果 | `promise` |
+| 线程池 | `packaged_task` |
+| 多个消费者 | `shared_future` |
+
+**常见陷阱**：
+```cpp
+// ❌ future 析构会阻塞
+{
+    auto fut = std::async(std::launch::async, long_task);
+}  // fut 析构，阻塞等待
+
+// ❌ 重复 get
+std::future<int> fut = std::async([]{ return 42; });
+int r1 = fut.get();
+// int r2 = fut.get();  // 崩溃
+
+// ✅ 用 shared_future
+std::shared_future<int> sf = std::async([]{ return 42; }).share();
+int r1 = sf.get();
+int r2 = sf.get();  // 正确
+
+// ❌ promise 忘记设置值
+std::promise<int> prom;
+std::future<int> fut = prom.get_future();
+// prom 析构，fut.get() 会抛异常
+
+// ✅ 确保设置值
+prom.set_value(42);
+```
+
+**要点**：
+- `async` - 启动异步任务（最简单）
+- `future` - 获取结果（get 只能调用一次）
+- `promise` - 手动设置结果（配合 future）
+- `packaged_task` - 包装函数（用于线程池）
+- `shared_future` - 多个消费者（可以多次 get）
+- 简单异步用 `async`，精确控制用 `thread`
+- future 析构会阻塞，记得调用 get

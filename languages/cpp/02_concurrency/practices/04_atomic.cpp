@@ -1,6 +1,6 @@
 // 原子操作实践：无锁同步
-// 编译：g++ -std=c++17 -pthread 04_atomic.cpp -o atomic_demo
-// 运行：./atomic_demo
+// 编译：g++ -std=c++17 -pthread 04_atomic.cpp -o atomic
+// 运行：./atomic
 //
 // 目的：演示原子操作的使用和性能对比
 
