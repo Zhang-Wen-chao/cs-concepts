@@ -820,3 +820,190 @@ cv.wait(lock);  // 编译错误
 - 修改条件后立即通知
 - 先解锁再通知（性能更好）
 - 单消费者用 `notify_one`，多消费者用 `notify_all`
+
+---
+
+## 10. 原子操作
+
+**核心概念**：原子操作 = 不可分割的操作，无需锁，硬件直接支持
+
+**为什么需要？**
+```cpp
+// ❌ 非原子：counter++ 分三步（读取 → 加1 → 写回）
+int counter = 0;
+counter++;  // 多线程不安全
+
+// ✅ 原子：一步完成，线程安全
+std::atomic<int> counter(0);
+counter++;  // 快！无需锁
+```
+
+**基本用法**：
+```cpp
+#include <atomic>
+
+std::atomic<int> a(0);
+std::atomic<bool> flag(false);
+std::atomic<int*> ptr(nullptr);
+
+// 读取
+int value = a.load();
+int value2 = a;  // 隐式 load()
+
+// 写入
+a.store(10);
+a = 10;  // 隐式 store()
+```
+
+**常用操作**：
+```cpp
+std::atomic<int> counter(0);
+
+counter++;              // 自增
+counter--;              // 自减
+counter += 5;           // 加 5
+
+int old = counter.fetch_add(1);    // 返回旧值，然后 +1
+int old2 = counter.exchange(100);  // 设为 100，返回旧值
+
+// CAS：compare_exchange（最强大）
+int expected = 10;
+int desired = 20;
+bool success = counter.compare_exchange_strong(expected, desired);
+// 如果 counter == expected，设为 desired，返回 true
+// 否则，expected 被更新为 counter 的当前值，返回 false
+```
+
+**原子 bool（标志位）**：
+```cpp
+std::atomic<bool> ready(false);
+
+ready.store(true);              // 设置
+bool value = ready.load();      // 读取
+bool old = ready.exchange(true); // 交换
+```
+
+**自旋锁实现**：
+```cpp
+class SpinLock {
+    std::atomic<bool> flag_{false};
+public:
+    void lock() {
+        while (flag_.exchange(true)) {
+            // 自旋等待
+        }
+    }
+    void unlock() {
+        flag_.store(false);
+    }
+};
+```
+
+**CAS（比较并交换）**：
+```cpp
+// 无锁队列的核心
+void push(int value) {
+    Node* new_node = new Node(value);
+    new_node->next = head.load();
+
+    // CAS 循环：不断重试，直到成功
+    while (!head.compare_exchange_weak(new_node->next, new_node)) {
+        // 失败：其他线程抢先了，重试
+    }
+}
+```
+
+**weak vs strong**：
+```cpp
+compare_exchange_weak    // 可能虚假失败，用于循环（性能更好）
+compare_exchange_strong  // 不会虚假失败，用于单次操作
+```
+
+**内存顺序**：
+```cpp
+memory_order_seq_cst    // 默认：最强，最安全（推荐初学者）
+memory_order_acquire    // 读操作
+memory_order_release    // 写操作
+memory_order_relaxed    // 最弱：只保证原子性，性能最好
+
+// 生产者-消费者
+int data = 0;
+std::atomic<bool> ready(false);
+
+// 生产者
+data = 42;
+ready.store(true, std::memory_order_release);  // 写操作
+
+// 消费者
+while (!ready.load(std::memory_order_acquire)) {}  // 读操作
+std::cout << data;  // 保证看到 42
+```
+
+**原子操作 vs 锁**：
+```cpp
+// ✅ 原子操作（适用场景）
+std::atomic<int> counter(0);      // 简单计数器
+std::atomic<bool> done(false);    // 标志位
+int old = value.exchange(10);     // 简单读-改-写
+
+// ✅ 锁（适用场景）
+std::mutex mtx;
+{
+    std::lock_guard<std::mutex> lock(mtx);
+    data1 = 10;  // 保护多个变量
+    data2 = 20;
+    data3 = 30;
+}
+```
+
+**选择建议**：
+| 场景 | 使用 |
+|------|------|
+| 简单计数器/标志位 | `atomic` |
+| 保护多个变量 | `mutex + lock_guard` |
+| 复杂操作 | `mutex + lock_guard` |
+| 性能关键的简单操作 | `atomic` |
+
+**性能对比**：
+- 原子操作：10-100 倍快于锁（简单操作）
+- 原因：CPU 硬件直接支持，不进入内核
+
+**常见陷阱**：
+```cpp
+// ❌ 非原子的复合操作
+std::atomic<int> counter(0);
+if (counter == 0) {
+    counter = 1;  // 其他线程可能在这之间修改
+}
+
+// ✅ 用 CAS
+int expected = 0;
+counter.compare_exchange_strong(expected, 1);
+
+// ❌ 以为能保护其他变量
+std::atomic<bool> ready(false);
+int data = 0;  // 不是原子的
+data = 42;     // 数据竞争
+ready = true;
+
+// ✅ 用内存顺序或锁
+data = 42;
+ready.store(true, std::memory_order_release);
+
+// ❌ 复杂类型
+struct MyStruct { int a, b, c; };
+std::atomic<MyStruct> s;  // 可能不支持
+
+// ✅ 简单类型
+std::atomic<int> a(0);
+std::atomic<bool> b(false);
+std::atomic<int*> ptr(nullptr);
+```
+
+**要点**：
+- 原子操作 = 无锁同步，比锁快
+- 用于简单类型（int、bool、指针）
+- 常用：`load`、`store`、`fetch_add`、`exchange`、`compare_exchange`
+- CAS 是最强大的原子操作，用于无锁数据结构
+- 简单操作用原子，复杂操作用锁
+- 内存顺序：初学者用默认，性能关键再优化
