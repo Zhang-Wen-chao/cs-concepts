@@ -1,6 +1,6 @@
 // 异步编程实践：async/future/promise
-// 编译：g++ -std=c++17 -pthread 05_async_future.cpp -o async_demo
-// 运行：./async_demo
+// 编译：g++ -std=c++17 -pthread 05_async_future.cpp -o async_future
+// 运行：./async_future
 //
 // 目的：演示异步编程的各种方式
 
