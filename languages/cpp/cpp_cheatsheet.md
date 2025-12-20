@@ -1205,3 +1205,234 @@ prom.set_value(42);
 - `shared_future` - 多个消费者（可以多次 get）
 - 简单异步用 `async`，精确控制用 `thread`
 - future 析构会阻塞，记得调用 get
+
+---
+
+## 12. 线程池
+
+**核心问题**：频繁创建/销毁线程 = 性能浪费
+
+**线程池原理**：
+1. 预先创建固定数量的线程（工作线程）
+2. 任务放入队列
+3. 工作线程从队列取任务执行
+4. 任务完成后，线程不销毁，继续等待新任务
+
+**简单实现**：
+```cpp
+class ThreadPool {
+    std::vector<std::thread> workers_;              // 工作线程
+    std::queue<std::function<void()>> tasks_;       // 任务队列
+    std::mutex queue_mutex_;                        // 保护队列
+    std::condition_variable condition_;             // 通知新任务
+    bool stop_;                                     // 停止标志
+
+public:
+    ThreadPool(size_t threads) : stop_(false) {
+        for (size_t i = 0; i < threads; ++i) {
+            workers_.emplace_back([this] {
+                while (true) {
+                    std::function<void()> task;
+                    {
+                        std::unique_lock<std::mutex> lock(queue_mutex_);
+                        condition_.wait(lock, [this] {
+                            return stop_ || !tasks_.empty();
+                        });
+                        if (stop_ && tasks_.empty()) return;
+                        task = std::move(tasks_.front());
+                        tasks_.pop();
+                    }
+                    task();  // 执行任务（不持有锁）
+                }
+            });
+        }
+    }
+
+    ~ThreadPool() {
+        {
+            std::lock_guard<std::mutex> lock(queue_mutex_);
+            stop_ = true;
+        }
+        condition_.notify_all();
+        for (std::thread& worker : workers_) {
+            worker.join();
+        }
+    }
+
+    template<typename F, typename... Args>
+    auto submit(F&& f, Args&&... args)
+        -> std::future<typename std::invoke_result_t<F, Args...>>
+    {
+        using return_type = typename std::invoke_result_t<F, Args...>;
+
+        auto task = std::make_shared<std::packaged_task<return_type()>>(
+            std::bind(std::forward<F>(f), std::forward<Args>(args)...)
+        );
+
+        std::future<return_type> res = task->get_future();
+
+        {
+            std::lock_guard<std::mutex> lock(queue_mutex_);
+            tasks_.emplace([task]() { (*task)(); });
+        }
+
+        condition_.notify_one();
+        return res;
+    }
+};
+```
+
+**基本使用**：
+```cpp
+ThreadPool pool(4);  // 4 个工作线程
+
+// 提交任务
+for (int i = 0; i < 10; ++i) {
+    pool.submit([i] {
+        std::cout << "任务 " << i << "\n";
+    });
+}
+```
+
+**获取返回值**：
+```cpp
+ThreadPool pool(4);
+
+std::vector<std::future<int>> results;
+for (int i = 0; i < 10; ++i) {
+    results.push_back(pool.submit([i] {
+        return i * i;
+    }));
+}
+
+// 收集结果
+for (auto& result : results) {
+    std::cout << result.get() << " ";
+}
+```
+
+**线程池大小选择**：
+```cpp
+// CPU 密集型：线程数 = CPU 核心数
+ThreadPool pool(std::thread::hardware_concurrency());
+
+// I/O 密集型：线程数 = CPU 核心数 × 2（或更多）
+ThreadPool pool(std::thread::hardware_concurrency() * 2);
+```
+
+**线程池 vs 直接创建线程**：
+```cpp
+// ❌ 直接创建（慢）
+for (int i = 0; i < 1000; ++i) {
+    std::thread t([i]{ process(i); });
+    t.join();
+    // 频繁创建/销毁，开销大
+}
+
+// ✅ 线程池（快）
+ThreadPool pool(4);
+for (int i = 0; i < 1000; ++i) {
+    pool.submit([i]{ process(i); });
+    // 复用线程，无需创建
+}
+```
+
+**并行计算**：
+```cpp
+ThreadPool pool(std::thread::hardware_concurrency());
+
+std::vector<std::future<int>> futures;
+for (int i = 0; i < 10; ++i) {
+    futures.push_back(pool.submit([i] {
+        return compute(i);
+    }));
+}
+
+for (auto& fut : futures) {
+    int result = fut.get();
+}
+```
+
+**实际应用场景**：
+```cpp
+// 1. Web 服务器
+ThreadPool pool(100);
+while (true) {
+    auto request = accept_connection();
+    pool.submit([request] {
+        handle_request(request);
+    });
+}
+
+// 2. 图像处理
+ThreadPool pool(8);
+for (auto& img : images) {
+    pool.submit([&img] {
+        process_image(img);
+    });
+}
+
+// 3. 数据处理
+ThreadPool pool(4);
+for (auto& data : data_chunks) {
+    pool.submit([&data] {
+        process_data(data);
+    });
+}
+```
+
+**常见陷阱**：
+```cpp
+// ❌ 忘记保存 future
+ThreadPool pool(4);
+for (int i = 0; i < 10; ++i) {
+    pool.submit([i]{ return i * i; });  // future 被丢弃
+}
+
+// ✅ 保存 future
+std::vector<std::future<int>> results;
+for (int i = 0; i < 10; ++i) {
+    results.push_back(pool.submit([i]{ return i * i; }));
+}
+
+// ❌ 死锁（任务互相等待）
+ThreadPool pool(2);
+auto fut1 = pool.submit([&pool] {
+    auto fut2 = pool.submit([] { return 42; });
+    return fut2.get();  // 等待 fut2，但线程池已满
+});
+
+// ❌ 任务队列无限增长
+for (int i = 0; i < 10000000; ++i) {
+    pool.submit([i]{ slow_task(i); });
+    // 任务提交速度 > 执行速度，队列爆满
+}
+
+// ❌ 提前析构
+{
+    ThreadPool pool(4);
+    for (int i = 0; i < 100; ++i) {
+        pool.submit([i]{ slow_task(i); });
+    }
+}  // pool 析构，任务可能还未完成
+
+// ✅ 确保任务完成
+std::vector<std::future<void>> futures;
+for (int i = 0; i < 100; ++i) {
+    futures.push_back(pool.submit([i]{ slow_task(i); }));
+}
+for (auto& fut : futures) {
+    fut.get();
+}
+```
+
+**要点**：
+- 线程池 = 复用线程，避免频繁创建/销毁
+- 结构：任务队列 + 工作线程 + 互斥锁 + 条件变量
+- 用 `packaged_task` + `future` 获取返回值
+- CPU 密集型：线程数 = CPU 核心数
+- I/O 密集型：线程数 = CPU 核心数 × 2
+- 优势：性能好、资源可控、易管理
+- 避免任务互相等待（死锁）
+- 限制任务队列大小
+- 确保任务完成后再析构
