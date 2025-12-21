@@ -32,44 +32,36 @@
 
 ## 安装 bRPC
 
-### macOS
+### macOS（推荐：使用 Homebrew）
 
 ```bash
-# 安装依赖
-brew install protobuf leveldb gflags openssl
-
-# 克隆 bRPC
-git clone https://github.com/apache/brpc.git
-cd brpc
-
-# 编译
-mkdir build && cd build
-cmake ..
-make -j8
-
-# 安装
-sudo make install
+# 直接安装 bRPC 及其依赖（protobuf 29 + Abseil）
+brew install brpc protobuf@29 abseil
 ```
 
 ### 验证安装
 
 ```bash
-# 检查头文件
-ls /usr/local/include/brpc
+# 检查头文件/库文件（brpc）
+ls /opt/homebrew/include/brpc
+ls /opt/homebrew/lib/libbrpc.*
 
-# 检查库文件
-ls /usr/local/lib/libbrpc.*
+# 检查 protobuf/absl 是否准备好
+ls /opt/homebrew/opt/protobuf@29/include/google/protobuf
+ls /opt/homebrew/opt/abseil/lib
 ```
 
 ## 项目结构
 
 ```
 02_brpc_hello/
-├── README.md           # 项目说明
-├── echo.proto          # Protobuf 服务定义
-├── echo_server.cpp     # 服务器
-├── echo_client.cpp     # 客户端
-└── Makefile            # 编译脚本
+├── README.md                  # 项目说明
+├── Makefile                   # 编译脚本
+├── server.cpp                 # 可运行的 bRPC Echo 服务器
+├── client.cpp                 # 对应的 Echo 客户端
+├── echo.proto                 # Protobuf 服务定义
+├── echo_server_example.cpp    # 服务器示例代码（学习用）
+└── echo_client_example.cpp    # 客户端示例代码（学习用）
 ```
 
 ## Protobuf 定义
@@ -100,11 +92,15 @@ service EchoService {
 
 ```cpp
 #include <brpc/server.h>
+#include <butil/logging.h>
+#include <gflags/gflags.h>
 #include "echo.pb.h"
 
-// 实现 Echo 服务
+DEFINE_int32(port, 8800, "TCP Port of this server");
+
 class EchoServiceImpl : public example::EchoService {
 public:
+
     void Echo(google::protobuf::RpcController* cntl_base,
               const example::EchoRequest* request,
               example::EchoResponse* response,
@@ -115,21 +111,33 @@ public:
         // 业务逻辑：返回相同消息
         response->set_message(request->message());
 
-        std::cout << "收到: " << request->message() << "\n";
+        brpc::Controller* cntl = static_cast<brpc::Controller*>(cntl_base);
+        LOG(INFO) << "收到: " << request->message()
+                  << " from " << cntl->remote_side();
     }
 };
 
-int main() {
+int main(int argc, char** argv) {
+    gflags::ParseCommandLineFlags(&argc, &argv, true);
+
     brpc::Server server;
 
     // 注册服务
     EchoServiceImpl echo_service;
-    server.AddService(&echo_service, brpc::SERVER_DOESNT_OWN_SERVICE);
+    if (server.AddService(&echo_service,
+                          brpc::SERVER_DOESNT_OWN_SERVICE) != 0) {
+        LOG(ERROR) << "注册服务失败";
+        return -1;
+    }
 
     // 启动服务器
     brpc::ServerOptions options;
-    server.Start(8080, &options);
+    if (server.Start(FLAGS_port, &options) != 0) {
+        LOG(ERROR) << "端口 " << FLAGS_port << " 启动失败";
+        return -1;
+    }
 
+    LOG(INFO) << "Echo server running at http://localhost:" << FLAGS_port;
     server.RunUntilAskedToQuit();
     return 0;
 }
@@ -139,21 +147,32 @@ int main() {
 
 ```cpp
 #include <brpc/channel.h>
+#include <brpc/controller.h>
+#include <butil/logging.h>
+#include <gflags/gflags.h>
 #include "echo.pb.h"
 
-int main() {
+DEFINE_string(server, "127.0.0.1:8800", "Server address, e.g. ip:port");
+DEFINE_string(message, "Hello bRPC", "Message to echo");
+
+int main(int argc, char** argv) {
+    gflags::ParseCommandLineFlags(&argc, &argv, true);
+
     brpc::Channel channel;
 
     // 初始化 channel
     brpc::ChannelOptions options;
-    channel.Init("127.0.0.1:8080", &options);
+    if (channel.Init(FLAGS_server.c_str(), &options) != 0) {
+        LOG(ERROR) << "初始化 channel 失败";
+        return -1;
+    }
 
     // 创建 stub
     example::EchoService_Stub stub(&channel);
 
     // 发送请求
     example::EchoRequest request;
-    request.set_message("Hello bRPC");
+    request.set_message(FLAGS_message);
 
     example::EchoResponse response;
     brpc::Controller cntl;
@@ -161,11 +180,11 @@ int main() {
     stub.Echo(&cntl, &request, &response, nullptr);
 
     if (cntl.Failed()) {
-        std::cerr << "RPC 失败: " << cntl.ErrorText() << "\n";
+        LOG(ERROR) << "RPC 失败: " << cntl.ErrorText();
         return 1;
     }
 
-    std::cout << "收到响应: " << response.message() << "\n";
+    LOG(INFO) << "收到响应: " << response.message();
     return 0;
 }
 ```
@@ -173,18 +192,34 @@ int main() {
 ## 编译和运行
 
 ```bash
-# 生成 Protobuf 代码
-protoc --cpp_out=. echo.proto
-
-# 编译
+# 生成 Protobuf + 编译 server/client
 make
 
-# 运行服务器（终端1）
-./echo_server
+# 启动服务器（默认 8800 端口，可通过 --port 调整）
+./server --port=8800
 
-# 运行客户端（终端2）
-./echo_client
+# 新开一个终端，调用客户端
+./client --server=127.0.0.1:8800 --message="Hello bRPC"
+
+# 在浏览器中访问
+# http://localhost:8800 - 查看 bRPC 内置监控页面
+# http://localhost:8800/status - 查看服务状态
 ```
+
+**成功标志**：
+- ✅ bRPC 成功编译
+- ✅ 服务器成功启动 + 客户端成功收到响应
+- ✅ 可以访问内置监控页面 (`/`, `/vars`, `/status`)
+
+**说明**：
+- `server.cpp` / `client.cpp` 是主线可运行代码
+- `echo_server_example.cpp` 和 `echo_client_example.cpp` 是扩展示例，展示更多注释和额外特性
+
+**学习建议**：
+1. 先运行 `server`/`client` 体验基础流程
+2. 再阅读示例代码理解更多 bRPC 细节
+3. 参考 [bRPC 官方示例](https://github.com/apache/brpc/tree/master/example)
+4. 实际项目中使用 bRPC 时，确保 Protobuf 版本匹配
 
 ## bRPC 核心概念
 
@@ -239,14 +274,14 @@ stub.Echo(&cntl, &request, &response, done);
 ### 1. 内置 HTTP 服务
 
 ```cpp
-// 访问 http://localhost:8080
+// 访问 http://localhost:<port>
 // 自动提供服务信息、统计数据
 ```
 
 ### 2. 性能监控
 
 ```cpp
-// 访问 http://localhost:8080/vars
+// 访问 http://localhost:<port>/vars
 // 查看 QPS、延迟、错误率等
 ```
 
