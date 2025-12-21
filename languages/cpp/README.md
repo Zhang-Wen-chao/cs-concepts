@@ -76,16 +76,16 @@ auto p = std::make_unique<int>(10);
 **核心：工业界必备的并发技能**
 
 **学习内容：**
-- [ ] 01_thread_basics.md - 线程基础
-- [ ] 02_mutex_locks.md - 互斥锁与 RAII 锁管理
-- [ ] 03_condition_variable.md - 条件变量
-- [ ] 04_atomic.md - 原子操作
-- [ ] 05_async_future.md - 异步编程
-- [ ] 06_thread_pool.md - 线程池（重要！）
+- [x] 01_thread_basics.md - 线程基础 ✅ 2025-12-18
+- [x] 02_mutex_locks.md - 互斥锁与 RAII 锁管理 ✅ 2025-12-18
+- [x] 03_condition_variable.md - 条件变量 ✅ 2025-12-18
+- [x] 04_atomic.md - 原子操作 ✅ 2025-12-19
+- [x] 05_async_future.md - 异步编程 ✅ 2025-12-19
+- [x] 06_thread_pool.md - 线程池（重要！） ✅ 2025-12-19
 
 **实践项目：**
-- [ ] 实现生产者-消费者模型
-- [ ] 实现一个线程池
+- [x] 实现生产者-消费者模型（`practices/03_condition_variable.cpp`）
+- [x] 实现一个线程池（`practices/06_thread_pool.cpp`）
 
 ---
 
