@@ -12,16 +12,16 @@ DEFINE_int32(port, 8080, "TCP Port of this server");
 DEFINE_int32(idle_timeout_s, -1, "Connection will be closed if there is no read/write operations during the last `idle_timeout_s`");
 
 // 实现 Echo 服务
-class EchoServiceImpl : public example::EchoService {
+class EchoServiceImpl : public example::EchoService::Service {
 public:
     EchoServiceImpl() = default;
-    ~EchoServiceImpl() = default;
+    virtual ~EchoServiceImpl() = default;
 
     // 实现 Echo RPC 方法
-    void Echo(google::protobuf::RpcController* cntl_base,
-              const example::EchoRequest* request,
-              example::EchoResponse* response,
-              google::protobuf::Closure* done) override {
+    virtual void Echo(google::protobuf::RpcController* cntl_base,
+                      const example::EchoRequest* request,
+                      example::EchoResponse* response,
+                      google::protobuf::Closure* done) {
 
         // RAII：确保调用 done->Run()
         brpc::ClosureGuard done_guard(done);
