@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package recommend;
+option cc_generic_services = true;
+
+message Candidate {
+    string item_id = 1;
+    double context_weight = 2;
+}
+
+message RecommendRequest {
+    string user_id = 1;
+    repeated Candidate candidates = 2;
+    int32 top_k = 3;
+}
+
+message Recommendation {
+    string item_id = 1;
+    double score = 2;
+    string reason = 3;
+}
+
+message RecommendResponse {
+    repeated Recommendation items = 1;
+}
+
+service RecommendService {
+    rpc Recommend(RecommendRequest) returns (RecommendResponse);
+}

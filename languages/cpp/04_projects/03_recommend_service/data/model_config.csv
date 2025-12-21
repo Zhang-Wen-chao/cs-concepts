@@ -1,0 +1,8 @@
+type,key,value
+user,alice,0.8
+user,bob,-0.3
+user,charlie,0.2
+item,itemA,1.2
+item,itemB,0.5
+item,itemC,-0.4
+item,itemD,1.0
