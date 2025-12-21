@@ -11,7 +11,7 @@ int main() {
     std::cout << "=== Simple RPC 客户端 ===\n\n";
 
     try {
-        RpcClient client("127.0.0.1", 8080);
+        RpcClient client("127.0.0.1", 9090);  // 改为 9090 端口
 
         // 测试加法
         std::cout << "测试加法：\n";

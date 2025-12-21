@@ -63,15 +63,22 @@ void RpcServer::start() {
         throw std::runtime_error("创建服务器 socket 失败");
     }
 
+    std::cout << "[调试] server_fd = " << server_fd_ << "\n";
+
     running_ = true;
     std::cout << "RPC 服务器启动在端口 " << port_ << "\n";
     std::cout << "等待连接...\n";
+    std::cout << "（使用 Ctrl+C 停止服务器）\n";
+    std::cout << std::flush;
 
     while (running_) {
         struct sockaddr_in client_addr;
         socklen_t client_len = sizeof(client_addr);
 
+        std::cout << "[调试] 等待 accept()...\n" << std::flush;
         int client_fd = accept(server_fd_, (struct sockaddr*)&client_addr, &client_len);
+        std::cout << "[调试] accept() 返回: " << client_fd << "\n" << std::flush;
+
         if (client_fd < 0) {
             if (running_) {
                 perror("accept");
@@ -79,7 +86,7 @@ void RpcServer::start() {
             continue;
         }
 
-        std::cout << "客户端连接\n";
+        std::cout << "客户端连接，fd = " << client_fd << "\n";
 
         // 简化：单线程处理（实际应用应该用线程池）
         handle_client(client_fd);

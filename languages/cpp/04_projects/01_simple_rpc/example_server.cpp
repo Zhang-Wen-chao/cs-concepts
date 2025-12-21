@@ -47,7 +47,7 @@ int main() {
     std::signal(SIGINT, signal_handler);
 
     try {
-        RpcServer server(8080);
+        RpcServer server(9090);  // 改为 9090 端口
         g_server = &server;
 
         // 注册服务

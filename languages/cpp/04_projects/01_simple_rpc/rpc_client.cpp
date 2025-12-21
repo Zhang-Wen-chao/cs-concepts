@@ -51,18 +51,24 @@ bool RpcClient::connect() {
 }
 
 int RpcClient::call(const std::string& function_name, int arg1, int arg2) {
+    std::cout << "[调试] call() 开始: " << function_name << "(" << arg1 << ", " << arg2 << ")\n" << std::flush;
+
     if (sock_fd_ < 0) {
+        std::cout << "[调试] socket 未连接，尝试连接...\n" << std::flush;
         if (!connect()) {
             throw std::runtime_error("连接服务器失败");
         }
     }
 
     uint32_t function_id = hash_function_name(function_name);
+    std::cout << "[调试] 函数ID: " << function_id << "\n" << std::flush;
 
+    std::cout << "[调试] 发送请求...\n" << std::flush;
     if (!send_request(function_id, arg1, arg2)) {
         throw std::runtime_error("发送请求失败");
     }
 
+    std::cout << "[调试] 等待响应...\n" << std::flush;
     return receive_response();
 }
 
