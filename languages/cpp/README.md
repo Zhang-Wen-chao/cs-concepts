@@ -97,7 +97,7 @@ auto p = std::make_unique<int>(10);
 - [x] 01_network_io.md - 网络 I/O（socket、epoll）✅ 2025-12-20
 - [x] 02_serialization.md - 序列化（Protobuf）✅ 2025-12-20
 - [x] 03_memory_management.md - 内存管理优化 ✅ 2025-12-20
-- [ ] 04_performance.md - 性能优化
+- [x] 04_performance.md - 性能优化 ✅ 2025-12-21
 
 **实践项目：**
 - [ ] 实现一个简单的 HTTP 服务器
@@ -178,7 +178,7 @@ std::vector<int> vec;    // 高效、安全、经过充分测试
 
 **阶段 2 进度：** 6/6 ✅✅✅✅✅✅ 🎉 完成！
 
-**阶段 3 进度：** 3/4 ✅✅✅⬜️ ⬅️ 当前阶段
+**阶段 3 进度：** 4/4 ✅✅✅✅ 🎉 完成！
 
 **阶段 4 进度：** 0/3 ⬜️⬜️⬜️
 
