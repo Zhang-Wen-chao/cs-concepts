@@ -1,127 +1,98 @@
 # Go 学习路径
 
-> 目标：掌握 Go 的语法基础、并发原语和工程化实践，能写出可靠的后端 / 工具程序。
+> 目标：掌握 Go 语法、并发、工程化与综合交付，快速产出 CLI + Service 组合项目。
 
-## 🎯 学习目标
-- 理解 Go 的语言哲学（简单、组合、面向并发）。
-- 熟悉核心语法：类型、切片、map、接口、错误处理、泛型。
-- 掌握 goroutine、channel、context、sync、errgroup 等并发原语。
-- 会用 Go Modules、testing、lint、profiling、observability 等工程化工具。
-- 完成至少两个实战项目（CLI 工具 + Web/service），并能与其他语言组件集成。
+## 🎯 学习阶段总览
 
-## 📖 学习流程
+| 阶段 | 目录 | 说明 | 核心产出 |
+| --- | --- | --- | --- |
+| 01 · Go 基础 | `01_go_basics/` | 思维方式 + 语法复习 | `01_mindset/greet`, `02_syntax_basics/stats`, `go_cheatsheet.md` |
+| 02 · 并发 | `02_concurrency/` | goroutine/channel/context/sync/errgroup | worker-pool 爬虫 |
+| 03 · 工程化 | `03_engineering/` | 模块、测试、HTTP、观测、部署 | Todo API + Makefile/Docker |
+| 04 · 综合项目 | `04_projects/` | CLI + Service 组合交付 | 日志分析 CLI + API + 文档 |
 
-Go 也沿用 C++ 学习路径里的“文档 → 示例 → 运行 → 小抄”闭环，确保每个主题都学完可落地。
+每个阶段目录包含：
+- `README.md`：任务清单、验收标准。
+- `notes/`：阅读笔记，链接官方资料。
+- `playground/`：对应代码和测试。
 
+## 📖 学习闭环
 ```
-1. 📄 看文档      notes/01_go_mindset.md（Effective Go + Less is More 摘要）
-   5-10 分钟通读要点，标记疑惑，必要时回到原文
+1. 📄 看文档    进入 stage/notes，5-10 分钟速读 + 标记疑问
    ↓
-2. 💻 看代码      playground/mindset/main.go
-   查看/编写示例，理解如何将理念落地
+2. 💻 看代码    对应 stage/playground，写出最小示例
    ↓
-3. 🚀 运行代码    gofmt -w . && go test ./... && go run .
-   每次练习都格式化 + 测试 + 运行，确保输出与预期一致
+3. 🚀 运行       go fmt ./... && go test ./... && go test -race ./... && go run ./cmd/...
    ↓
-4. 📝 记录小抄    go_cheatsheet.md
-   一句话总结 + 最小代码片段，阶段复习直接查阅
+4. 📝 小抄       go_cheatsheet.md 中补录套路 + 指令
 ```
+- 练习时间控制在 15~20 分钟，超时就拆解子问题。
+- `go fmt ./...`, `go test ./...`, `golangci-lint run` 作为默认验收命令。
 
-**关键：**
-- “看文档 / 看代码 / 运行 / 小抄”一一对应，完成一套流程再进入下一个主题。
-- 每个主题目标 15-20 分钟，超过 30 分钟就拆分成更小的子问题。
-- `gofmt`、`go test ./...`、`golangci-lint run` 作为默认验收流程，保持和工程实践一致。
+## 🧭 阶段任务速览
 
-## 📚 学习路径
+### 阶段 1 · Go 基础（`01_go_basics`）
+- 阅读：`notes/01_go_mindset.md`, `02_syntax_basics.md`，Go Tour Basics/Flow control/Functions。
+- 实践：`playground/01_mindset/greet`（flag + table test）、`playground/02_syntax_basics/stats`（算法 + benchmark 雏形）。
+- 验收：`cd 01_go_basics/playground && go fmt ./... && go test ./...`.
+- 复盘：写下工具链（go fmt/test）、语法惯性、`go_cheatsheet.md` 更新点。
 
-每个阶段都用“阅读 / 练习 / 验收”结构，确保勾选即代表真正学完。
+### 阶段 2 · 并发（`02_concurrency`）
+- 阅读：`notes/01_goroutines.md` ~ `05_errgroup_rate_limiting.md`。
+- 实践：`playground/01_crawler/internal/crawler`（worker pool + context + 限流 + 重试），`01_crawler/cmd/crawler` CLI。
+- 验收：`go test ./... && go test -race ./... && go run 01_crawler/cmd/crawler --urls 01_crawler/fixtures/urls.txt`.
+- 输出：在 `go_cheatsheet.md` 新增 goroutine/channel/context/sync/errgroup 速记。
+- 额外演练：`playground/02_context_guard`, `03_sync_limiter`, `04_errgroup_pipeline`。
 
-### 阶段 1 · Go 基础（约 1 周）
-- [ ] Go mindset —— 阅读 [Effective Go（前 3 章）](https://go.dev/doc/effective_go) + Go Blog「Less is More」，理解少抽象、组合优于继承。
-- [ ] 语法基础 —— 在 [Go Tour](https://go.dev/tour/welcome/1) 完成 Basics、Flow control、Functions，并动手解小练习；补充笔记见 `notes/02_syntax_basics.md`。
-- [ ] 集合与引用语义 —— 研读 Go Blog「[Go Slices: usage and internals](https://go.dev/blog/slices-intro)」，对比 array/slice/map 的拷贝与共享。
-- [ ] 组合与接口 —— 阅读 [Methods and interfaces](https://go.dev/tour/methods/1) + Go by Example: Structs/Interfaces，理解方法集、鸭子类型。
-- [ ] 错误处理 —— 查阅 `errors` 包文档以及「[Working with Errors in Go](https://go.dev/blog/go1.13-errors)」，练习 `errors.Is/As`、`fmt.Errorf("%w")`、`panic/recover`。
-- [ ] 类型与泛型补充 —— 浏览「[Generics in Go](https://go.dev/doc/tutorial/generics)」，了解类型参数、零值、逃逸分析的直观示例。
+### 阶段 3 · 工程化（`03_engineering`）
+- 阅读：`notes/01_modules_tooling.md` ~ `05_deployment.md`。
+- 实践：`playground/01_todo_api/internal/todo` Repository + Handler + Memory storage，`01_todo_api/cmd/server`。
+- 验收：`go vet`, `golangci-lint`, `go test ./... -bench . -benchmem -cover`, `docker build`.
+- 输出：Makefile/Taskfile、Dockerfile、README、coverage。
+- 额外演练：`playground/02_tooling_runner`, `03_http_middleware`, `04_observability`。
 
-**实践：迷你 CLI `greet`**
-- [ ] 使用 `flag` 或 `cobra` 解析 `--name`、`--lang`，默认输出中文/英文问候。
-- [ ] 输出格式通过 table-driven test 覆盖（`go test ./...` 必须通过）。
-- [ ] 在 `main.go` 头部注释记录常用命令（`gofmt/go test/go run --flag`），`golangci-lint run`（或 `go vet`）无告警。
-- [ ] 目录建议：`playground/mindset/greet`；完成后在 `go_cheatsheet.md` 添加“CLI flag + table test”条目。
+### 阶段 4 · 综合项目（`04_projects`）
+- 阅读：`notes/01_project_brief.md` ~ `03_integration_testing.md`，完成需求/架构/测试计划。
+- 实践：`playground/01_cli_service/internal/bridge` + `01_cli_service/cmd/api` + `01_cli_service/cmd/cli`，对接 Stage2/3 能力。
+- 验收：`go test ./... -race`, `go run 01_cli_service/cmd/api`, `go run 01_cli_service/cmd/cli --query error`, `docker compose up`.
+- 输出：项目 README、架构图、操作指南、复盘记录。
+- 额外演练：`playground/02_ingest_pipeline`, `03_query_service`。
 
-### 阶段 2 · 并发（约 1 周）
-- [ ] goroutine 调度 —— 阅读官方文档「[Goroutines](https://go.dev/tour/concurrency/1)」+ Go Blog Scheduling 图解。
-- [ ] channel 模式 —— 完成 Tour 中 Channel 章节 + Go by Example: Timers/Tickers/Worker Pools，重点练 select、缓冲 vs 非缓冲。
-- [ ] context —— 研读 [`context` 包 blog](https://go.dev/blog/context) + `context.WithCancel/Timeout` 用法，了解 value 传递边界。
-- [ ] 同步原语 —— 实验 `sync.Mutex/RWMutex/WaitGroup/Once`、`atomic.Value`，理解适用场景。
-- [ ] errgroup & 限流 —— 阅读 `golang.org/x/sync/errgroup` 文档，顺便了解 `semaphore`/`rate` 包以控制并发度。
+更多细节参见各阶段 README。
 
-**实践：并发爬虫**
-- [ ] 输入 URL 列表，使用 worker pool + context 超时控制，总并发 <= 20。
-- [ ] 统计响应时间/状态码，输出 JSON 或表格；失败重试 1 次并记录错误。
-- [ ] 完整测试：为抓取逻辑提供 fake server 或 `httptest.Server`；`go test -race ./...` 必须通过。
-
-### 阶段 3 · 工程化（约 1-2 周）
-- [ ] Modules & Tooling —— 深入 [Go Modules Guide](https://go.dev/doc/modules/managing-dependencies)，练习 `replace`、`vendor`，使用 `go fmt`, `go vet`, `golangci-lint`, `air`.
-- [ ] Testing & Benchmark —— 学习 [Testing pkg](https://pkg.go.dev/testing)、table-driven、subtests、mock 接口，掌握 `-run/-bench/-benchmem`、`benchstat`、`coverage`。
-- [ ] HTTP & Middleware —— 阅读 [net/http](https://pkg.go.dev/net/http) 官方示例，了解 `http.Server` 生命周期、context、`chi`/`gin` 等 router。
-- [ ] 配置 / 观测性 —— 实践 `flag` + env + config file（如 `viper`），接入 `zap/logrus` 日志，使用 `pprof`, `expvar`, `prometheus` 指标；尝试 `trace` 或 `pprof` 分析。
-- [ ] 部署准备 —— 编写 `Makefile`/`Taskfile`、Dockerfile，熟悉 `ENV`/`ARG`、多阶段构建。
-
-**实践：RESTful Todo API**
-- [ ] CRUD + 过滤查询（分页/状态）在内存或 SQLite 中实现。
-- [ ] 编写 integration test（可用 `httptest`）与 benchmark，覆盖率 >= 70%。
-- [ ] 暴露 `/healthz`、`/metrics`，提供 swagger 或 simple markdown 文档。
-- [ ] 容器化运行：`docker build` + `docker run` 成功，支持配置化端口/日志级别。
-
-### 阶段 4 · 综合项目（约 1 周）
-- [ ] 设计 “CLI + Service” 组合，如「日志分析 CLI + HTTP 查询服务」，定义需求、技术栈、交付物。
-- [ ] 规划里程碑：数据采集层 → 分析/持久化 → API/CLI 输出 → 集成测试。
-- [ ] 与现有 C++/Python 组件对接：优先 gRPC/HTTP，明确 proto/JSON schema，验证互操作性与性能。
-- [ ] 最终交付包含：README、架构图、部署脚本、基准数据、回顾笔记（问题 & 改进）。
-
-## 🔧 快速开始
+## 🔧 快速开始（通用）
 ```bash
 # 1. 安装 Go 1.22+
-https://go.dev/dl/
+brew install go   # 或到 https://go.dev/dl/ 下载
 
-# 2. 创建 playground 目录（用于阶段练习）
-cd languages/go && mkdir -p playground && cd playground
+# 2. 进入目标阶段
+cd languages/go/01_go_basics/playground
 
-# 3. 初始化模块
-go mod init github.com/yourname/go-playground
-
-# 4. Hello World
-cat <<'HELLO' > main.go
-package main
-import "fmt"
-func main() {
-    fmt.Println("Hello, Go!")
-}
-HELLO
-
-go run .
-go test ./...   # 默认在每个练习目录都跑一次
+# 3. 运行练习
+go fmt ./...
+go test ./...
+go run 01_mindset/greet --name Gopher --lang en
 ```
+- 其他阶段同理：切换到 `02_concurrency/playground` 等目录再执行命令。
+- 若需初始化新模块：`go mod init github.com/aaron/cs-concepts/<module-name>`。
 
-## 📅 复盘与进度记录
-在 README 底部追加最新记录即可，保持与 `languages/cpp` 相同节奏。
+## 📅 复盘与进度追踪
 
-| 阶段 | 完成日期 | 产出目录/链接 | 复盘要点 |
+| 阶段 | 完成日期 | 产出路径 | 复盘要点 |
 | --- | --- | --- | --- |
-| 阶段 1 | yyyy-mm-dd | languages/go/playground/cli | 例：切片共享导致 bug，已用 copy 修复 |
+| 阶段 1 | yyyy-mm-dd | `01_go_basics/playground` | 例：切片共享导致 bug，已用 `copy` 修复 |
 | 阶段 2 |  |  |  |
 | 阶段 3 |  |  |  |
 | 阶段 4 |  |  |  |
 
-复盘要回答：本周学到了什么？踩坑/定位方法？下一步计划？是否需要与 C++ 进度对齐？
+复盘提示：学到了什么？踩坑/定位方法？下周计划？是否要与 `languages/cpp` 进度对齐？
 
 ## 📖 推荐资料
-1. 《The Go Programming Language》（A. Donovan）
-2. Go 官方 Tour：https://tour.golang.org/
-3. Go Blog & Go by Example：实践导向示例
-4. GoTime Podcast + Ardan Labs Blog（工程实践/调优案例）
+1. 《The Go Programming Language》（Donovan & Kernighan）
+2. Go Tour：https://tour.golang.org/
+3. Go Blog & Go by Example
+4. GoTime Podcast、Ardan Labs Blog（工程实践）
+5. TopGoer 中文教程：https://www.topgoer.com/
 
 ---
-记录每个阶段的完成日期，和 `cpp` 路径一样保持同步，方便回顾学习节奏。
+保持与 `languages/cpp` 同步：每完成一个阶段就在复盘表更新日期 + 产出链接。

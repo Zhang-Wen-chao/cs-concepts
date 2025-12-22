@@ -16,7 +16,7 @@
 ### Formatting
 - “格式问题交给机器”是 Go 的基本规则，`gofmt`/`go fmt ./...` 是唯一正确答案。
 - 依赖 `gofmt` 自动对齐注释、格式化 import；若格式结果不满意，重构代码或提 issue，而不是手动对齐。
-- 建议开启 IDE “format on save”，并把 `gofmt -w .` 放进提交前的常规流程。
+- 建议开启 IDE “format on save”，并把 `go fmt ./...` 放进提交前的常规流程。
 
 ### Commentary
 - 默认为 `//` 行注释；`/* */` 仅用于包注释或临时屏蔽大段代码。
@@ -30,8 +30,8 @@
 - 新特性引入极其克制，只在能显著提升工程生产力时才引入；其余交给标准库、工具或框架解决。
 
 ## 行动清单
-- 写任何 Go 代码前先跑 `gofmt -w .`、`go test ./...`，形成肌肉记忆。
+- 写任何 Go 代码前先跑 `go fmt ./...`、`go test ./...`，形成肌肉记忆。
 - 准备 `go env GOPATH`、`go version` 输出，确保环境≥1.22。
-- 建立 `playground/mindset` 与 `go_cheatsheet.md`：代码示例和速记一一对应。
+- 建立 `playground/01_mindset` 与 `go_cheatsheet.md`：代码示例和速记一一对应。
 - 给每个导出符号写 doc comment（哪怕是 demo），练习“声明即文档”的思维。
 - 复盘：记录“组合 vs 继承”“工具强制一致性”“并发设计”三点对当前工作的影响。

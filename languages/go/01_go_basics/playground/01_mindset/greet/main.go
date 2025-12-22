@@ -9,7 +9,7 @@ import (
 /*
 Usage:
 
-	gofmt -w .                      // 自动格式化全部源码
+	go fmt ./...                    // 自动格式化全部源码
 	go test ./...                   // 运行所有单元测试
 	go run . --name=Go --lang=en    // 带上 flag 运行 demo
 
