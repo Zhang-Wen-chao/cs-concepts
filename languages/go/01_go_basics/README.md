@@ -10,7 +10,7 @@
 
 ## Checklist
 - [x] Mindset：`notes/01_go_mindset.md` + `playground/01_mindset/greet`（flag + 表驱动测试）。
-- [ ] Syntax：`notes/02_syntax_basics.md` + `playground/02_syntax_basics/stats`（if/for/switch + 多返回值）。
+- [x] Syntax：`notes/02_syntax_basics.md` + `playground/02_syntax_basics/stats`（if/for/switch + 多返回值）。
 - [ ] Collections：`notes/03_collections.md` + `playground/03_collections/slices`（切片分块 + map 合并 + 拷贝策略）。
 - [ ] Structs & Interfaces：`notes/04_structs_interfaces.md` + `playground/04_interfaces/shapes`（方法集、type switch、鸭子类型）。
 - [ ] Error handling：`notes/05_error_handling.md` + `playground/05_errors/validator`（`errors.Is/Join`、哨兵错误）。
