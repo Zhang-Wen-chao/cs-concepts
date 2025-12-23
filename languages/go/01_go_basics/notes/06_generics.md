@@ -35,3 +35,8 @@ func (s Set[T]) Has(v T) bool { _, ok := s[v]; return ok }
 - [ ] 能写出一个泛型容器或算法（Map/Filter/Set）。
 - [ ] 清楚 `comparable`、`constraints.Ordered`、`~int`（底层类型约束）的用途。
 - [ ] 知道何时保持简单（接口/具象类型）而不是过度泛化。
+
+> 参考答案
+> 1. `playground/06_generics` 中的 `MapSlice`, `Filter`, `Keys` 就是典型泛型算法：`MapSlice[T, R any]`, `Filter[T any]`, `Keys[K comparable, V any]`。
+> 2. `comparable` 允许用作 map key/==；`constraints.Ordered` 适合 `<`/`>`；`~int` 约束底层类型（如自定义 `type MyInt int`）仍可使用。
+> 3. 数据结构/算法层面用泛型提升复用；业务 API 仍首选具象类型或小接口，避免为了泛型牺牲可读性。

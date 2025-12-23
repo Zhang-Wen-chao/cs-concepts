@@ -14,8 +14,8 @@
 | 数据一致性 | CLI 成功推送的数据可在 1s 内被 API 查询到 |
 
 ## 交付物
-- 双可执行文件：`01_cli_service/cmd/cli`、`01_cli_service/cmd/api`
-- 公共 `01_cli_service/internal/bridge` 包：统一 DTO/HTTP 客户端
+- 单一可执行文件：`01_cli_service --mode=cli|api`
+- 公共 `01_cli_service` 内部桥接代码：统一 DTO/HTTP 客户端
 - 运行手册 + API 文档（可用 OpenAPI 或简单 Markdown）
 - docker-compose：一键启动 API + 可选数据库 + fake log producer
 

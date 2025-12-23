@@ -5,7 +5,7 @@
 ## Build Pipeline
 1. `make lint` → fmt/vet/lint
 2. `make test` → `go test ./... -race`
-3. `make build` → `GOOS=linux GOARCH=amd64 go build -o bin/app ./01_todo_api/cmd/server`
+3. `make build` → `GOOS=linux GOARCH=amd64 go build -o bin/app ./01_todo_api`
 4. `make docker` → `docker build -t todo-api:dev .`
 
 ## Docker 多阶段示例
@@ -13,7 +13,7 @@
 FROM golang:1.22 AS build
 WORKDIR /src
 COPY . .
-RUN go build -o /out/server ./01_todo_api/cmd/server
+RUN go build -o /out/server ./01_todo_api
 
 FROM gcr.io/distroless/base-debian12
 COPY --from=build /out/server /server

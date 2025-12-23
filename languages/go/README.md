@@ -6,7 +6,7 @@
 
 | 阶段 | 目录 | 说明 | 核心产出 |
 | --- | --- | --- | --- |
-| 01 · Go 基础 | `01_go_basics/` | 思维方式 + 语法复习 | `01_mindset/greet`, `02_syntax_basics/stats`, `go_cheatsheet.md` |
+| 01 · Go 基础 | `01_go_basics/` | 思维方式 + 语法复习 | `01_mindset`, `02_syntax_basics`, `go_cheatsheet.md` |
 | 02 · 并发 | `02_concurrency/` | goroutine/channel/context/sync/errgroup | worker-pool 爬虫 |
 | 03 · 工程化 | `03_engineering/` | 模块、测试、HTTP、观测、部署 | Todo API + Makefile/Docker |
 | 04 · 综合项目 | `04_projects/` | CLI + Service 组合交付 | 日志分析 CLI + API + 文档 |
@@ -33,30 +33,29 @@
 
 ### 阶段 1 · Go 基础（`01_go_basics`）
 - 阅读：`notes/01_go_mindset.md`, `02_syntax_basics.md`，Go Tour Basics/Flow control/Functions。
-- 实践：`playground/01_mindset/greet`（flag + table test）、`playground/02_syntax_basics/stats`（算法 + benchmark 雏形）。
+- 实践：`playground/01_mindset`（flag + table test）、`playground/02_syntax_basics`（算法 + benchmark 雏形）。
 - 验收：`cd 01_go_basics/playground && go fmt ./... && go test ./...`.
 - 复盘：写下工具链（go fmt/test）、语法惯性、`go_cheatsheet.md` 更新点。
 
 ### 阶段 2 · 并发（`02_concurrency`）
 - 阅读：`notes/01_goroutines.md` ~ `05_errgroup_rate_limiting.md`。
-- 实践：`playground/01_crawler/internal/crawler`（worker pool + context + 限流 + 重试），`01_crawler/cmd/crawler` CLI。
-- 验收：`go test ./... && go test -race ./... && go run 01_crawler/cmd/crawler --urls 01_crawler/fixtures/urls.txt`.
+- 实践：`playground/01_crawler`（worker pool + context + 限流 + 重试）。
+- 验收：`go test ./... && go test -race ./... && go run 01_crawler --urls 01_crawler/fixtures/urls.txt`.
 - 输出：在 `go_cheatsheet.md` 新增 goroutine/channel/context/sync/errgroup 速记。
 - 额外演练：`playground/02_context_guard`, `03_sync_limiter`, `04_errgroup_pipeline`。
 
-### 阶段 3 · 工程化（`03_engineering`）
+- ### 阶段 3 · 工程化（`03_engineering`）
 - 阅读：`notes/01_modules_tooling.md` ~ `05_deployment.md`。
-- 实践：`playground/01_todo_api/internal/todo` Repository + Handler + Memory storage，`01_todo_api/cmd/server`。
+- 实践：`playground/01_todo_api`（Repository + Handler + Server）。
 - 验收：`go vet`, `golangci-lint`, `go test ./... -bench . -benchmem -cover`, `docker build`.
 - 输出：Makefile/Taskfile、Dockerfile、README、coverage。
 - 额外演练：`playground/02_tooling_runner`, `03_http_middleware`, `04_observability`。
 
 ### 阶段 4 · 综合项目（`04_projects`）
 - 阅读：`notes/01_project_brief.md` ~ `03_integration_testing.md`，完成需求/架构/测试计划。
-- 实践：`playground/01_cli_service/internal/bridge` + `01_cli_service/cmd/api` + `01_cli_service/cmd/cli`，对接 Stage2/3 能力。
-- 验收：`go test ./... -race`, `go run 01_cli_service/cmd/api`, `go run 01_cli_service/cmd/cli --query error`, `docker compose up`.
+- 实践：`playground/01_cli_service`（`--mode=api|cli` 切换）、`02_ingest_pipeline`、`03_query_service`。
+- 验收：`go test ./... -race`, `go run 01_cli_service --mode=api`, `go run 01_cli_service --mode=cli --query error`, `docker compose up`.
 - 输出：项目 README、架构图、操作指南、复盘记录。
-- 额外演练：`playground/02_ingest_pipeline`, `03_query_service`。
 
 更多细节参见各阶段 README。
 
@@ -71,7 +70,7 @@ cd languages/go/01_go_basics/playground
 # 3. 运行练习
 go fmt ./...
 go test ./...
-go run 01_mindset/greet --name Gopher --lang en
+go run 01_mindset --name Gopher --lang en
 ```
 - 其他阶段同理：切换到 `02_concurrency/playground` 等目录再执行命令。
 - 若需初始化新模块：`go mod init github.com/aaron/cs-concepts/<module-name>`。

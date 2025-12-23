@@ -33,3 +33,8 @@ if errors.Is(err, ErrNotFound) {
 - [ ] 会定义/使用哨兵错误，并通过 `errors.Is/As` 判断。
 - [ ] 了解 `fmt.Errorf("...%w", err)` 与 `%v` 的差别。
 - [ ] 明确 panic 与 error 的分界：只有不可恢复/编程错误才 panic。
+
+> 参考答案
+> 1. 在 `playground/05_errors` 中定义 `ErrEmptyName` 等哨兵错误，通过 `errors.Is(err, ErrEmptyName)` 判断是否命中，`errors.Join` 聚合多个错误后仍可匹配。
+> 2. `%w` 会保留错误链，允许调用方使用 `errors.Is/As`；`%v` 只格式化输出，无法再向外传播原始错误。
+> 3. panic 用于编程错误（如不可恢复的不变量破坏），正常业务流程用返回 error；库代码不要 `panic/log.Fatal`，交给调用方处理。

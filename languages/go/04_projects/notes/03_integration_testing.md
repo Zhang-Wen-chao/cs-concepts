@@ -25,6 +25,6 @@ resp, err := http.Post(srv.URL+\"/v1/ingest\", \"application/json\", bytes.NewRe
 - 文档与包：生成 `swagger.json` 或 Markdown，随 release 附件发布。
 
 ## Checklist
-- [ ] `01_cli_service/cmd/cli` 与 `01_cli_service/cmd/api` 皆有 `testdata/`，并可通过 `go test ./...` 运行。
+- [ ] `01_cli_service` 同时覆盖 CLI（`--mode=cli`）和 API（`--mode=api`）场景，并配套 `testdata/`。
 - [ ] `make e2e` 启动 docker-compose，跑完自动清理容器。
 - [ ] Release 说明包含版本、变更、校验和。

@@ -1,12 +1,12 @@
 # 阶段 3 · 工程化
 
-> 目标：掌握 Go Modules、测试/基准、HTTP 服务、配置与可观测性、部署流程，交付具备 CRUD + 观测能力的 Todo API（`playground/01_todo_api/cmd/server`）。
+> 目标：掌握 Go Modules、测试/基准、HTTP 服务、配置与可观测性、部署流程，交付具备 CRUD + 观测能力的 Todo API（`playground/01_todo_api`）。
 
 ## 学习闭环
 | 步骤 | 资料 | 产出 |
 | --- | --- | --- |
 | 阅读 | `notes/01_modules_tooling.md` ~ `05_deployment.md` + 官方 Modules Guide / net/http docs | 工程笔记、命令速记 |
-| 实验 | `playground/01_todo_api/internal/todo` | Repository + Handler + Integration Test + Benchmark |
+| 实验 | `playground/01_todo_api` | Repository + Handler + Integration Test + Benchmark |
 | 运行 | `go test ./... -run Test -bench . -benchmem -cover` | 单测/子测/基准/覆盖率齐全 |
 | 记录 | `go_cheatsheet.md` 工程化篇 | 常用命令、部署脚本、调优提示 |
 
@@ -21,10 +21,10 @@
 - [ ] Dockerfile + Makefile：支持 `make test`, `make run`, `docker build`, `docker run -p`.
 
 ## Playground 模块
-- `01_todo_api/...` —— RESTful Todo 服务骨架。
-- `02_tooling_runner/...` —— 注入式命令执行器，示范如何封装 fmt/vet/test。
-- `03_http_middleware/...` —— Logging middleware，可直接挂到 `http.ServeMux`。
-- `04_observability/...` —— `expvar` 计数器注册表 + `/metrics` Demo。
+- `01_todo_api` —— RESTful Todo 服务骨架。
+- `02_tooling_runner` —— 注入式命令执行器，示范如何封装 fmt/vet/test。
+- `03_http_middleware` —— Logging middleware，可直接挂到 `http.ServeMux`。
+- `04_observability` —— `expvar` 计数器注册表 + `/metrics` Demo。
 
 ## 验收方式
 ```bash
@@ -33,7 +33,7 @@ go fmt ./...
 go vet ./...
 golangci-lint run ./...    # 若未安装，可先使用 go vet
 go test ./... -run Test -bench . -benchmem -cover
-make run OR go run 01_todo_api/cmd/server
+make run OR go run 01_todo_api
 ```
 - `/healthz` 返回 200，`/metrics` 暴露基础指标（可用 `expvar`/`prometheus`）。
 - Docker 镜像可通过环境变量配置端口、日志级别。

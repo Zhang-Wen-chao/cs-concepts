@@ -1,12 +1,12 @@
 # 阶段 2 · 并发
 
-> 目标：熟练使用 goroutine、channel、context、sync、errgroup 等原语，并完成一个受限并发的爬虫 `playground/01_crawler/cmd/crawler`。
+> 目标：熟练使用 goroutine、channel、context、sync、errgroup 等原语，并完成一个受限并发的爬虫 `playground/01_crawler`。
 
 ## 学习闭环
 | 步骤 | 资料 | 产出 |
 | --- | --- | --- |
 | 阅读 | `notes/01_goroutines.md` ~ `05_errgroup_rate_limiting.md` + Go Tour Concurrency / Go Blog | 笔记 + 疑问列表 |
-| 实验 | `playground/01_crawler/internal/crawler` | 逐步实现 worker pool / context / 限流 |
+| 实验 | `playground/01_crawler` | 逐步实现 worker pool / context / 限流 |
 | 运行 | `go fmt ./... && go test ./... && go test -race ./...` | 通过 race detector + table tests |
 | 记录 | `go_cheatsheet.md` 并发篇 | 追加 goroutine/channel/context 速查 |
 
@@ -20,7 +20,7 @@
 - [ ] `crawler` 单元测试：使用 `httptest.Server` 模拟延迟/失败，并通过 `go test -race ./...`。
 
 ## Playground 模块
-- `01_crawler/...` —— worker pool + context + 限流 CLI。
+- `01_crawler` —— worker pool + context + 限流 CLI。
 - `02_context_guard` —— `RunWithTimeout` 演示 `context.WithTimeout` 的包装用法。
 - `03_sync_limiter` —— channel 信号量实现，保证最大并发。
 - `04_errgroup_pipeline` —— `errgroup + semaphore` 处理批量任务并保持顺序。
@@ -31,7 +31,7 @@ cd languages/go/02_concurrency/playground
 go fmt ./...
 go test ./...
 go test -race ./...
-go run 01_crawler/cmd/crawler --urls 01_crawler/fixtures/urls.txt --timeout 3s --max-workers 20
+go run 01_crawler --urls 01_crawler/fixtures/urls.txt --timeout 3s --max-workers 20
 ```
 - 运行时打印 JSON/表格统计，且超时/失败有明确日志。
 - `urls.txt` 可放在 `playground/01_crawler/fixtures`，包含慢速与失败 URL 以验证重试逻辑。

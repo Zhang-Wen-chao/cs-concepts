@@ -19,7 +19,7 @@ cover:
 	go tool cover -func=coverage.out
 
 run:
-	go run ./01_todo_api/cmd/server
+	go run ./01_todo_api
 
 docker:
 	docker build -t todo-api:dev .

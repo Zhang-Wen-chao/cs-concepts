@@ -34,3 +34,8 @@ default:
 - [ ] 编写过带嵌入字段的 struct，并能解释方法集规则。
 - [ ] 理解 "接口即契约"：消费端根据需要定义接口，而非在生产端预先设计。
 - [ ] 通过 type assertion/switch 处理多态行为并写测试覆盖。
+
+> 参考答案
+> 1. 示例：`playground/04_interfaces` 中 Rectangle/Circle 结构体，嵌入字段可直接访问，值接收者/指针接收者决定方法集；指针类型拥有值+指针方法，值类型仅拥有值方法。
+> 2. 接口应由使用方定义，如 `type Shape interface { Area() float64 }`，任何满足者自动实现；避免在生产端预先设计宽接口。
+> 3. `Describe(s Shape)` 中使用 type switch/断言区分 Rectangle/Circle 并写测试覆盖不同分支。

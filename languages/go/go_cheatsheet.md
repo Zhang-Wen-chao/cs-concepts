@@ -4,7 +4,7 @@
 
 ---
 
-## 01. Go Mindset（notes/01_go_mindset.md + playground/01_mindset/greet）
+## 01. Go Mindset（notes/01_go_mindset.md + playground/01_mindset）
 
 **核心理念**
 1. 工具先行：写任何 Go 代码前跑 `go fmt ./...`、`go test ./...`，风格与正确性交由工具兜底。
@@ -23,7 +23,7 @@
 
 ---
 
-## 02. Syntax Basics（notes/02_syntax_basics.md + playground/02_syntax_basics/stats）
+## 02. Syntax Basics（notes/02_syntax_basics.md + playground/02_syntax_basics）
 
 1. 变量/常量：`var count int` 自动赋零值；函数内可用 `:=`。常量在编译期确定，例如 `const Pi = 3.14`。
 2. 多返回值：`func describeNumbers(nums []int) (Report, error)` —— 先判断 `err != nil` 再使用结果；命名返回值仅在极短函数中使用。
@@ -31,7 +31,7 @@
 
 ---
 
-## 03. Collections（notes/03_collections.md + playground/03_collections/slices）
+## 03. Collections（notes/03_collections.md + playground/03_collections）
 
 - 切片共享底层数组，写操作前 `clone := append([]T(nil), src...)` 以免外部修改。
 - `Chunk(nums, size)` 模式：预估容量 `(len(nums)+size-1)/size`，循环使用 `append([]T(nil), nums[i:end]...)` 拷贝块。
@@ -39,7 +39,7 @@
 
 ---
 
-## 04. Structs & Interfaces（notes/04_structs_interfaces.md + playground/04_interfaces/shapes）
+## 04. Structs & Interfaces（notes/04_structs_interfaces.md + playground/04_interfaces）
 
 - 方法接收者：值接收者适合只读，指针接收者修改状态；方法集决定接口实现。
 - 小接口优先：`type Shape interface { Area() float64; Perimeter() float64 }`；任意 struct 只要实现即可“鸭子类型”。
@@ -47,7 +47,7 @@
 
 ---
 
-## 05. Error Handling（notes/05_error_handling.md + playground/05_errors/validator）
+## 05. Error Handling（notes/05_error_handling.md + playground/05_errors）
 
 - 哨兵错误：`var ErrEmptyName = errors.New("empty name")`，通过 `errors.Is(err, ErrEmptyName)` 判断。
 - `fmt.Errorf("context: %w", err)` 保留原始错误链；`errors.Join` 聚合多处校验失败。
@@ -55,7 +55,7 @@
 
 ---
 
-## 06. Generics（notes/06_generics.md + playground/06_generics/transform）
+## 06. Generics（notes/06_generics.md + playground/06_generics）
 
 - 函数类型参数：`func MapSlice[T any, R any](in []T, fn func(T) R) []R`，`any` 即任意类型。
 - 约束：`comparable` 允许作为 map key，`constraints.Ordered` 适合排序/比较。
@@ -93,7 +93,7 @@
 
 ## 10. CLI + Service Patterns（04_projects/notes）
 
-- `01_cli_service/internal/bridge` 统一 DTO/Client/Router，CLI 与 API 共享协议，便于未来扩展。
+- `01_cli_service` 中桥接代码统一 DTO/Client/Router，CLI 与 API 共享协议，`--mode=api|cli` 切换。
 - CLI 配置优先级：默认值 → 配置文件 → env → flag；解析后校验并记录。
 - 集成测试：`httptest.NewServer` 运行 API，CLI 注入 fake HTTP client + golden files；Docker Compose 编排 CLI job + API + 数据源。
 - 部署 checklist：`make lint/test/build`, `docker build`, `docker compose up`, Release 附运行/监控说明。
