@@ -1,0 +1,47 @@
+# Compiled executables
+block_reduce
+matrix_transpose
+matmul_*
+conv_*
+attention_*
+reduce_*
+radix_sort
+*.out
+*.exe
+
+# Object files
+*.o
+*.obj
+
+# CUDA compilation files
+*.i
+*.ii
+*.gpu
+*.ptx
+*.cubin
+*.fatbin
+
+# Profiling outputs
+*.nsys-rep
+*.ncu-rep
+*.qdrep
+*.sqlite
+
+# Build directories
+build/
+bin/
+lib/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.log
+
+# Mac
+.DS_Store
