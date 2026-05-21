@@ -4,7 +4,7 @@
 
 ---
 
-## 01. Go Mindset（notes/01_go_mindset.md + playground/01_mindset）
+## 01. Go Mindset（notes/01_mindset.md + playground/01_mindset）
 
 **核心理念**
 1. 工具先行：写任何 Go 代码前跑 `go fmt ./...`、`go test ./...`，风格与正确性交由工具兜底。
@@ -39,7 +39,7 @@
 
 ---
 
-## 04. Structs & Interfaces（notes/04_structs_interfaces.md + playground/04_interfaces）
+## 04. Structs & Interfaces（notes/04_interfaces.md + playground/04_interfaces）
 
 - 方法接收者：值接收者适合只读，指针接收者修改状态；方法集决定接口实现。
 - 小接口优先：`type Shape interface { Area() float64; Perimeter() float64 }`；任意 struct 只要实现即可“鸭子类型”。
@@ -47,7 +47,7 @@
 
 ---
 
-## 05. Error Handling（notes/05_error_handling.md + playground/05_errors）
+## 05. Error Handling（notes/05_errors.md + playground/05_errors）
 
 - 哨兵错误：`var ErrEmptyName = errors.New("empty name")`，通过 `errors.Is(err, ErrEmptyName)` 判断。
 - `fmt.Errorf("context: %w", err)` 保留原始错误链；`errors.Join` 聚合多处校验失败。

@@ -6,7 +6,7 @@
 
 | 阶段 | 目录 | 说明 | 核心产出 |
 | --- | --- | --- | --- |
-| 01 · Go 基础 | `01_go_basics/` | 思维方式 + 语法复习 | `01_mindset`, `02_syntax_basics`, `go_cheatsheet.md` |
+| 01 · Go 基础 | `01_language_foundations/` | 思维方式 + 语法复习 | `01_mindset`, `02_syntax_basics`, `go_cheatsheet.md` |
 | 02 · 并发 | `02_concurrency/` | goroutine/channel/context/sync/errgroup | worker-pool 爬虫 |
 | 03 · 工程化 | `03_engineering/` | 模块、测试、HTTP、观测、部署 | Todo API + Makefile/Docker |
 | 04 · 综合项目 | `04_projects/` | CLI + Service 组合交付 | 日志分析 CLI + API + 文档 |
@@ -31,10 +31,10 @@
 
 ## 🧭 阶段任务速览
 
-### 阶段 1 · Go 基础（`01_go_basics`）
-- 阅读：`notes/01_go_mindset.md`, `02_syntax_basics.md`，Go Tour Basics/Flow control/Functions。
+### 阶段 1 · Go 基础（`01_language_foundations`）
+- 阅读：`notes/01_mindset.md`, `02_syntax_basics.md`，Go Tour Basics/Flow control/Functions。
 - 实践：`playground/01_mindset`（flag + table test）、`playground/02_syntax_basics`（算法 + benchmark 雏形）。
-- 验收：`cd 01_go_basics/playground && go fmt ./... && go test ./...`.
+- 验收：`cd 01_language_foundations/playground && go fmt ./... && go test ./...`.
 - 复盘：写下工具链（go fmt/test）、语法惯性、`go_cheatsheet.md` 更新点。
 
 ### 阶段 2 · 并发（`02_concurrency`）
@@ -65,7 +65,7 @@
 brew install go   # 或到 https://go.dev/dl/ 下载
 
 # 2. 进入目标阶段
-cd languages/go/01_go_basics/playground
+cd languages/go/01_language_foundations/playground
 
 # 3. 运行练习
 go fmt ./...
@@ -79,7 +79,7 @@ go run 01_mindset --name Gopher --lang en
 
 | 阶段 | 完成日期 | 产出路径 | 复盘要点 |
 | --- | --- | --- | --- |
-| 阶段 1 | yyyy-mm-dd | `01_go_basics/playground` | 例：切片共享导致 bug，已用 `copy` 修复 |
+| 阶段 1 | yyyy-mm-dd | `01_language_foundations/playground` | 例：切片共享导致 bug，已用 `copy` 修复 |
 | 阶段 2 |  |  |  |
 | 阶段 3 |  |  |  |
 | 阶段 4 |  |  |  |

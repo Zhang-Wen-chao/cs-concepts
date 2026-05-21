@@ -3,7 +3,7 @@ package transform // 泛型容器/算法示例：Map/Filter/Keys
 /*
 Usage:
 
-	cd languages/go/01_go_basics/playground/06_generics
+	cd languages/go/01_language_foundations/playground/06_generics
 	go fmt ./...
 	go test ./...
 	go test . -run TestMapSlice

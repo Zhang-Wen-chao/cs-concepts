@@ -3,7 +3,7 @@ package validator // 错误处理套路：哨兵错误 + %w + errors.Join
 /*
 Usage:
 
-	cd languages/go/01_go_basics/playground/05_errors
+	cd languages/go/01_language_foundations/playground/05_errors
 	go fmt ./...
 	go test ./...
 	go test . -run TestValidateUserJoin

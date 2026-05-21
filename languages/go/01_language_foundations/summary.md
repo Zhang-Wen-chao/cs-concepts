@@ -52,4 +52,4 @@ func Map[T, R any](in []T, f func(T) R) []R
 - 适用于容器/算法复用；业务代码仍优先具体类型或小接口
 
 ## playground
-- [`01_go_basics/playground`](./01_go_basics/playground/) — 语法基础、集合、接口、错误、泛型示例
+- [`01_language_foundations/playground`](./01_language_foundations/playground/) — 语法基础、集合、接口、错误、泛型示例
