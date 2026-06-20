@@ -1,9 +1,22 @@
 # Build artifacts
 *.o
 *.out
+*.exe
+*.i
+*.s
+*.ii
+*.scc
+*.d
 *.class
 build/
 systems/cuda/CUDA_Freshman/build/
+
+# Compiled binaries (no extension, typical names)
+hello
+a.out
+languages/**/01_basics
+languages/**/02_*
+languages/**/demo
 
 # Python
 __pycache__/
