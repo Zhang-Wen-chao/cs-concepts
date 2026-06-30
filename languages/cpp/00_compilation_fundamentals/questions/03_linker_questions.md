@@ -17,7 +17,7 @@ void foo();      // 声明
 void foo() {}    // 定义
 ```
 
-声明可以出现多次，定义只能一次（ODR）。
+声明可以出现多次，定义只能一次（ODR — One Definition Rule / 一次定义原则）。
 
 </details>
 
@@ -69,7 +69,7 @@ void foo() {}    // 定义
 
 ## Q5
 
-ODR（One Definition Rule — 一次定义原则）的核心规则是什么？
+ODR 的核心规则是什么？
 
 <details>
 <summary>答案</summary>
