@@ -15,7 +15,7 @@ systems/cuda/CUDA_Freshman/build/
 hello
 a.out
 languages/**/01_basics
-languages/**/02_*
+languages/**/02_raii_smart_pointers
 languages/**/demo
 
 # Python

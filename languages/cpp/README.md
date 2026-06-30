@@ -25,13 +25,31 @@
 
 **进度跟踪**：
 - [x] Stage 0 — 编译底层
-- [x] Stage 1 — C++ vs Python 本质（笔记 + 实战完成）
+- [x] Stage 1 — C++ vs Python 本质
+- [x] Stage 2 — 内存模型与 RAII（笔记 + 实战完成）
 - [ ] Stage 2 — 内存模型与 RAII
 - [ ] Stage 3 — 面向对象深入
 - [ ] Stage 4 — 模板与泛型
 - [ ] Stage 5 — STL 源码级
 - [ ] Stage 6 — 现代 C++ 特性
 - [ ] Stage 7 — 并发与内存序
+
+### Stage 1 细化（2026-06-25 快照）
+
+`languages/cpp/01_cpp_vs_python/` 下的 10 个子主题：
+
+- [x] 1.7 智能指针（深挖: 控制块 + make_shared 优势）
+- [ ] 1.1 静态类型 — auto / 模板 / 隐式转换 / explicit
+- [ ] 1.2 编译执行 — 4 步编译每阶段产物的本质
+- [ ] 1.3 内存管理 — 栈 vs 堆 / new & delete / 泄漏 / double free / UAF
+- [ ] 1.4 值语义 — 默认拷贝 / 对象切片 / 何时用指针或引用
+- [ ] 1.5 错误处理 — 编译期 vs 运行期 / 异常 / sanitizer
+- [ ] 1.6 RAII — 资源绑生命周期
+- [ ] 1.8 头文件 & ODR — 声明 vs 定义 / 头文件守卫 / 链接期错误
+- [ ] 1.9 未定义行为 (UB) — "看起来能跑" + sanitizer
+- [ ] 1.10 const / 引用 / move — 函数参数默认 const& / std::move 本质
+
+> 串讲过 1.6 / 1.8 / 1.9 / 1.10 + 五大差异 5 个子项, 但 Aaron 说"尝试写功能但记不住", **未通过小白式复述过关**。除 1.7 外都还是 [ ]。
 
 ---
 
