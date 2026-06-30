@@ -1,68 +1,144 @@
-# 02 · Syntax Basics
+# Go 语法基础
 
-> 资料：Tour of Go（Basics / Flow control / Functions / Methods），Effective Go 相关章节
-
-## 变量与零值
-- `var` 声明会自动赋零值（int→0、string→""、指针/interface→nil），不必手动初始化。
-- 使用 `:=` 的短变量声明只能在函数内使用，且左侧必须有新变量。
-- `const` 只能保存编译期常量；未指定类型的常量会在赋值时推断。
+## 变量声明
 
 ```go
-var count int            // 0
-name := "gopher"        // 推断 string
-const Pi = 3.14159
+// 四种声明方式
+var x int = 10       // 完整声明
+var x = 10           // 类型推导
+x := 10              // 短声明（只能在函数内）
+var x int            // 零值声明（x = 0）
 ```
 
-## 函数与多返回值
-- 函数可以返回多个值，常用于“结果 + 错误”。
-- 命名返回值可以在函数尾部直接 `return` 省略变量名，但只在逻辑简单时使用。
-- 支持可变参数（`func sum(nums ...int)`），调用时 `sum(slice...)` 可展开切片。
+**短声明 `:=`** 是最常用的。它声明并初始化，编译器推导类型。
+
+## 基本类型
 
 ```go
-func average(nums []int) (float64, error) {
-    if len(nums) == 0 {
-        return 0, errors.New("empty input")
-    }
-    total := 0
-    for _, n := range nums {
-        total += n
-    }
-    return float64(total) / float64(len(nums)), nil
-}
+bool                    // true/false
+int int8 int16 int32 int64
+uint uint8 uint16 uint32 uint64
+uintptr                 // 指针类型，大小随平台
+float32 float64
+complex64 complex128    // 复数！
+byte                    // = uint8
+rune                    // = int32（Unicode code point）
+string                  // UTF-8，不可变
 ```
 
-## 流程控制
-- Go 只有一种循环：`for`。支持 `for init; condition; post {}`、`for condition {}`、`for {}`（无限循环）。
-- `if`、`switch`、`for` 语句都支持“短语句”作为初始化部分（如 `if v := expr; v > 10 { ... }`）。
-- `switch` 默认会在匹配后自动 `break`，除非显式 `fallthrough`；条件可以留空、也可以是表达式。
-- `defer` 在函数返回前执行，按栈顺序 LIFO，非常适合资源释放或日志。
+**没有 `char` 类型**。C++ 的 `char` 在 Go 里用 `byte` 或 `rune`。
+
+## 控制流
+
+### if
 
 ```go
-for i := 0; i < 3; i++ { ... }
-
-if result, err := doWork(); err != nil {
-    return err
+if x > 0 {
+    fmt.Println("positive")
+} else if x < 0 {
+    fmt.Println("negative")
 } else {
-    fmt.Println(result)
+    fmt.Println("zero")
 }
 
-switch {
-case sum < 0:
-    return "negative"
-case sum == 0:
-    return "zero"
+// if 可以跟一个语句
+if err := doSomething(); err != nil {
+    fmt.Println("error:", err)
+}
+// err 的作用域只在 if 块内
+```
+
+### for（唯一循环关键字）
+
+```go
+// 传统
+for i := 0; i < 10; i++ { }
+
+// while 风格
+for x < 10 { x++ }
+
+// 无限循环
+for { break }
+
+// range
+for i, v := range []int{1, 2, 3} { }
+for k, v := range map[string]int{"a": 1} { }
+```
+
+**只有 `for`，没有 `while` 和 `do-while`。**
+
+### switch
+
+```go
+switch x {
+case 1:
+    fmt.Println("one")  // 自动 break，不穿透
+case 2, 3:
+    fmt.Println("two or three")
 default:
-    return "positive"
+    fmt.Println("other")
+}
+
+// switch 可以没有表达式（当 if 用）
+switch {
+case x < 0:
+    fmt.Println("negative")
+case x == 0:
+    fmt.Println("zero")
 }
 ```
 
-## 指针与复合类型（快速预览）
-- Go 有指针但没有指针运算，函数默认按值传递；对切片、map、channel 的复制依然共享底层数据。
-- `struct` 可嵌套、匿名字段可模拟“组合”。
-- 这些内容会在后续章节展开，这里先知道语法形态即可。
+## 函数
 
-## 行动清单
-- 用短语句写 `if err := ...; err != nil { ... }`，替换掉外层变量声明。
-- 所有新 demo 必须覆盖：`for range`、`if` 短语句、`switch`（无 `break`）。
-- 表驱动测试里多返回值要一起断言，遇到错误时先判断 `err` 再看结果。
-- 多值返回 + `go test ./...` 是默认开发流程，肌肉记忆。
+```go
+// 多返回值
+func divide(a, b int) (int, error) {
+    if b == 0 {
+        return 0, errors.New("division by zero")
+    }
+    return a / b, nil
+}
+
+// 命名返回值
+func split(sum int) (x, y int) {
+    x = sum * 4 / 9
+    y = sum - x
+    return  // "裸返回"——返回当前 x, y 的值
+}
+```
+
+**多返回值**是 Go 函数的核心特性。C++ 用输出参数或 tuple，Python 用 tuple。
+
+## defer
+
+```go
+func readFile(name string) error {
+    f, err := os.Open(name)
+    if err != nil { return err }
+    defer f.Close()     // 函数返回前执行
+
+    // 处理文件...
+    return nil
+}
+```
+
+`defer` 确保资源释放，是 Go 的 RAII 等价物。多个 defer **后进先出**。
+
+## 指针
+
+```go
+var x int = 42
+var p *int = &x    // 指向 x
+*p = 21             // 修改 x
+```
+
+**没有指针运算**（不像 C++ 可以 `p++`）。
+
+## 总结
+
+| 特性 | Go 写法 | C++ 写法 | Python 写法 |
+|------|---------|----------|-------------|
+| 变量 | `x := 10` | `int x = 10;` | `x = 10` |
+| 范围 for | `for i, v := range` | `for (auto& v : vec)` | `for i, v in enumerate()` |
+| 错误返回 | `(T, error)` | 异常/输出参数 | 异常 |
+| 释放资源 | `defer f.Close()` | RAII/析构 | `with` / `finally` |

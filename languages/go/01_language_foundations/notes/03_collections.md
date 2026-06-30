@@ -1,39 +1,114 @@
-# 03 · 集合与引用语义
+# Go 复合类型
 
-> 资料：Go Blog「Go Slices: usage and internals」、Effective Go 数组/切片章节、Go Tour `moretypes` 模块。
-
-## 数组 vs 切片
-- **数组**：`[N]T`，长度是类型一部分，赋值/传参会复制整个数组。
-- **切片**：`[]T`，包含指向底层数组的指针、长度、容量，按引用语义传递。
-- `len` 返回元素个数，`cap` 返回容量；`append` 超出容量时会分配新底层数组。
+## Array（数组）
 
 ```go
-names := []string{"go", "cpp"}
-copyNames := names       // 共享底层数组
-clone := append([]string(nil), names...) // 独立副本
+var arr [5]int             // [0 0 0 0 0]
+arr := [5]int{1, 2, 3, 4, 5}
+arr := [...]int{1, 2, 3}   // 由编译器推导长度
 ```
 
-## map 语义
-- `map[K]V` 默认零值为 `nil`，必须 `make(map[K]V)` 才能写入。
-- 读不存在的键返回零值，可结合 `v, ok := m[k]` 判断是否存在。
-- 遍历顺序不稳定，需要稳定顺序时先收集 key 并排序。
+数组是**值类型**——传参会拷贝全部元素。这点跟 C++ 的内置数组不同（C++ 数组传参退化为指针）。
 
-## 常见操作
-- `copy(dst, src)`：按最小长度复制；适合切片备份。
-- `append(dst, src...)`：`...` 可展开切片。
-- `delete(m, key)`：从 map 中移除键。
+## Slice（切片）
 
-## 建议
-1. 传递只读切片时用 `[]T`，写操作前 `clone := append([]T(nil), src...)`。
-2. map 作为函数参数时无需返回（引用语义），除非要返回错误或新 map。
-3. 通过 `var zero []T` 表示“未初始化但可读”的切片；用 `make([]T, 0, n)` 预分配。
+```go
+var s []int                 // nil slice: len=0, cap=0
+s := []int{1, 2, 3}         // len=3, cap=3
+s := make([]int, 5)         // len=5, cap=5, 全零
+s := make([]int, 0, 10)     // len=0, cap=10
 
-## Checklist
-- [ ] 能解释数组/切片差异，并说明 `append` 什么时候会重新分配。
-- [ ] map 零值/存在判断/删除操作熟练掌握。
-- [ ] 写过至少一个“切分/聚合”函数并配有表驱动测试。
+// 子切片（共享底层数组）
+arr := [5]int{0, 1, 2, 3, 4}
+s := arr[1:4]               // [1, 2, 3]
+```
 
-> 参考答案
-> 1. 数组长度固定，赋值/传参会整块复制；切片由指针+长度+容量组成，按引用语义传递，`append` 在超出 `cap` 时会分配新底层数组。
-> 2. 零值 `nil` map 只能读不能写；`v, ok := m[k]` 判断存在；`delete(m, key)` 无论 key 是否存在都安全。
-> 3. 示例：`playground/03_collections` 中的 `Chunk`/`MergeCounters`，配有表驱动测试覆盖正常、空输入与错误分支。
+Slice 是 Go 中最常用的"动态数组"。底层结构：
+
+```
+┌──────────┐
+│  ptr ──────→ [底层数组]
+│  len = 3  │
+│  cap = 5  │
+└──────────┘
+```
+
+### append
+
+```go
+var s []int
+s = append(s, 1)        // [1]
+s = append(s, 2, 3)     // [1, 2, 3]
+s = append(s, []int{4,5}...)  // [1, 2, 3, 4, 5]
+```
+
+`append` 在 cap 不够时分配新数组（通常翻倍增长），返回新 slice。**必须用返回值。**
+
+```go
+s = append(s, 1)   // ✅
+append(s, 1)       // ❌ 没用——返回值丢了
+```
+
+### copy
+
+```go
+src := []int{1, 2, 3}
+dst := make([]int, len(src))
+n := copy(dst, src)  // n = 3，dst = [1, 2, 3]
+```
+
+## Map
+
+```go
+var m map[string]int              // nil map，不能写入
+m := make(map[string]int)         // ✅ 空 map，可以写入
+m := map[string]int{"a": 1, "b": 2}
+
+// CRUD
+m["c"] = 3                         // 写入
+v := m["a"]                        // 读取（key 不存在返回零值）
+v, ok := m["z"]                    // v=0, ok=false（检查 key 是否存在）
+delete(m, "a")                     // 删除
+```
+
+Map 遍历顺序**随机**——不要依赖顺序。
+
+## Struct
+
+```go
+type Person struct {
+    Name string
+    Age  int
+}
+
+// 创建
+p := Person{Name: "Alice", Age: 30}
+p := Person{"Alice", 30}           // 按字段顺序初始化（不推荐）
+
+// 访问
+fmt.Println(p.Name)                // Alice
+
+// 方法（在 struct 外部定义）
+func (p Person) Greet() string {   // 值接收者
+    return "Hello, I'm " + p.Name
+}
+
+func (p *Person) SetAge(age int) { // 指针接收者
+    p.Age = age
+}
+```
+
+Go 的方法定义在 struct **外面**——这是 Go 和 C++/Python 的重要区别。C++ 的方法写在 class 内部，Python 也是。
+
+## 比较
+
+| 类型 | `==` 可比较？ | 作为 map key？ |
+|------|:---:|:---:|
+| bool | ✅ | ✅ |
+| 数值 | ✅ | ✅ |
+| string | ✅ | ✅ |
+| 指针 | ✅ | ✅ |
+| struct（全是可比较字段） | ✅ | ✅ |
+| struct（含 slice/map） | ❌ | ❌ |
+| slice | ❌ | ❌ |
+| map | ❌ | ❌ |

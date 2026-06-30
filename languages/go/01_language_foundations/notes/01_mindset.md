@@ -1,37 +1,84 @@
-# 01 · Go Mindset
+# Go 思维方式
 
-> 资料：Effective Go（Introduction / Formatting / Commentary），Go Blog《Less is More》，Rob Pike 演讲。
+> Go 不是 Python，也不是 C++。它的设计哲学非常独特。
 
-## 为什么要读
-- 避免把 C++/Java 思维直接移植到 Go，提前建立“组合优先、约定优于配置”的语言感。
-- 明白工具链（`go fmt`, `godoc` 等）负责风格一致性，个人精力专注在抽象与工程实践。
-- 认识 Go 团队“少即是多”的设计哲学，在选型/重构时不再盲目追求语法炫技。
+## 核心哲学
 
-## Effective Go 要点
+### 1. 少即是多
 
-### Introduction
-- Go 借鉴多语言但不追求兼容；要写好 Go，必须接受其语义和约定，避免逐字翻译他语言。
-- 代码面向团队协作，命名 / 格式 / 构建流程都要遵循社区标准，减少理解成本。
+Go 只有 **25 个关键字**（C++ 有 80+，Python 有 35+）。没有：
+- ❌ 类继承（用组合）
+- ❌ 泛型（Go 1.18 之前；现在的泛型也有限制）
+- ❌ 异常（用 error 值）
+- ❌ 运算符重载
+- ❌ 继承（vs C++）
 
-### Formatting
-- “格式问题交给机器”是 Go 的基本规则，`go fmt ./...`（底层调用 gofmt）是唯一正确答案。
-- 依赖 `go fmt` 自动对齐注释、格式化 import；若格式结果不满意，重构代码或提 issue，而不是手动对齐。
-- 建议开启 IDE “format on save”，并把 `go fmt ./...` 放进提交前的常规流程。
+少 -> 代码更容易理解 -> 更容易维护。
 
-### Commentary
-- 默认为 `//` 行注释；`/* */` 仅用于包注释或临时屏蔽大段代码。
-- 紧贴声明、无空行的注释会作为 doc comment，被 `go doc` / `pkg.go.dev` 自动抓取。
-- Doc comment 应写成完整句子，描述“做什么/返回什么/注意事项”，方便 API 使用者直接阅读。
+### 2. 显式优于隐式
 
-## Less is More 要点
-- Go 有意识地删除复杂特性（继承层级、宏、异常），换取更快编译、低心智负担和一致风格。
-- 组合优于继承：通过接口和结构体嵌入拼装行为，使依赖关系简单、易于并发扩展。
-- “Share memory by communicating”：用 goroutine + channel 让同步语义显式，减少隐式共享带来的数据竞争。
-- 新特性引入极其克制，只在能显著提升工程生产力时才引入；其余交给标准库、工具或框架解决。
+```go
+// Go — 错误必须显式处理
+f, err := os.Open("file.txt")
+if err != nil {
+    // 你没法忽略 err
+}
 
-## 行动清单
-- 写任何 Go 代码前先跑 `go fmt ./...`、`go test ./...`，形成肌肉记忆。
-- 准备 `go env GOPATH`、`go version` 输出，确保环境≥1.22。
-- 建立 `playground/01_mindset` 与 `go_cheatsheet.md`：代码示例和速记一一对应。
-- 给每个导出符号写 doc comment（哪怕是 demo），练习“声明即文档”的思维。
-- 复盘：记录“组合 vs 继承”“工具强制一致性”“并发设计”三点对当前工作的影响。
+// Python — 可以忽略异常
+f = open("file.txt")  # 不 try 也不管
+```
+
+### 3. 并发是内置的
+
+```go
+go doWork()   // 启动一个 goroutine，比启动线程轻量 1000 倍
+```
+
+C++ 的线程是标准库扩展，Python 的线程有 GIL 限制。Go 的 goroutine 从一开始就是语言的一部分。
+
+## 大写 = 公开
+
+Go 用**大小写**控制可见性，不是 `public/private`：
+
+```go
+func PrivateFunc() {}   // 大写字母开头 = 可导出（公开）
+func privateFunc() {}   // 小写字母开头 = 不可导出（私有）
+```
+
+简洁而没有歧义。
+
+## 错误不是异常
+
+```go
+// Go 风格：错误是值
+result, err := doSomething()
+if err != nil {
+    // 处理错误，不是抛异常
+    return fmt.Errorf("doSomething failed: %w", err)
+}
+```
+
+对比：
+- Python：`raise Exception("...")` — 不 catch 就崩
+- C++：`throw std::runtime_error(...)` — 不 catch 就崩
+- Go：`return err` — 你必须检查它
+
+## 零值哲学
+
+```go
+var x int         // x = 0
+var s string      // s = ""
+var p *int        // p = nil
+```
+
+不初始化也有安全值，这是 Go 的**零值保证**。对比 C++ 不初始化就是 UB。
+
+## 总结
+
+| 特性 | Go | Python | C++ |
+|------|-----|--------|-----|
+| 类型系统 | 静态，强类型 | 动态，强类型 | 静态，强类型 |
+| 并发 | goroutine + channel | GIL + asyncio | std::thread |
+| 错误 | error 值 | 异常 | 异常 |
+| 公开/私有 | 大写/小写 | \_ 约定 | public/private |
+| 零值 | 有 | N/A | 无（UB） |
