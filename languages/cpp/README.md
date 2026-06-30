@@ -11,7 +11,7 @@
 | 2 | 内存模型与 RAII | 谁负责释放内存？move 是什么？ | `02_memory_and_raii/` | 3 篇 |
 | 3 | 面向对象深入 | 虚函数表怎么工作？ | `03_oop_deep_dive/` | 4 篇 |
 | 4 | 模板与泛型 | 模板怎么实例化？ | `04_templates/` | 4 篇 |
-| 5 | STL 源码级 | vector / unordered_map 怎么实现？ | `05_stl_internals/` | 4 篇 |
+| 5 | STL（Standard Template Library / 标准模板库）源码级 | vector / unordered_map 怎么实现？ | `05_stl_internals/` | 4 篇 |
 | 6 | 现代 C++ 特性 | C++11/14/17/20 怎么用对？ | `06_modern_cpp/` | 5 篇 |
 | 7 | 并发与内存序 | 内存序是怎么回事？ | `07_concurrency/` | 5 篇 |
 

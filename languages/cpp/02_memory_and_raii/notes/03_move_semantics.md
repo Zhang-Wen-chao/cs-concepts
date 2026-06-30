@@ -62,7 +62,7 @@ public:
 // 1. 函数返回局部变量
 std::vector<int> makeVec() {
     std::vector<int> v;
-    return v;     // 自动移动（或 NRVO 省略）
+    return v;     // 自动移动（或 NRVO — Named Return Value Optimization 省略）
 
     // 2. 传值参数构造
     void Widget::setName(std::string name) {
@@ -121,6 +121,6 @@ public:
 |---|---|---|
 | 拷贝 | 分配 + 复制 | 不变 |
 | 移动 | 交换指针 | 有效但未指定 |
-| 省略（NRVO） | 零 | N/A |
+| 省略（NRVO — Named Return Value Optimization / 命名返回值优化） | 零 | N/A |
 
 **黄金法则**：如果不需要自定义析构/拷贝，用 `= default`。编译器生成的移动语义通常够用。

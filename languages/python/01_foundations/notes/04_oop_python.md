@@ -106,7 +106,7 @@ print(Date.is_valid("2026-13-01"))   # False — 静态方法
 | `@classmethod` | `cls` | 只能访问类状态，可以做替代构造器 |
 | `@staticmethod` | 没有 | 就是个类命名空间下的普通函数 |
 
-## MRO：方法解析顺序（C3 线性化）
+## MRO（Method Resolution Order — 方法解析顺序）：C3 线性化
 
 ```python
 class A:
@@ -126,7 +126,7 @@ d.method()          # B — 搜索顺序：D → B → C → A
 print(D.__mro__)    # D -> B -> C -> A -> object
 ```
 
-**MRO 规则**（C3 线性化）：
+**MRO 规则**（C3 线性化 — 保证单调性的 MRO 算法）：
 1. 子类优先于父类
 2. 从左到右
 3. 只有所有父类都满足的才是合法的

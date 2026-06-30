@@ -1,4 +1,6 @@
-# vector 源码探秘
+# vector 源码探秘（STL — Standard Template Library / 标准模板库）
+
+> 所有 STL 容器都是模板类，在编译期实例化为具体类型。
 
 ## 1. 内存布局
 

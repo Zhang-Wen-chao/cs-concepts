@@ -26,7 +26,7 @@ void foo() {}       // 定义
 
 ## Q2
 
-ODR 是什么的缩写？核心规则是什么？
+ODR（One Definition Rule — 一次定义原则）是什么的缩写？核心规则是什么？
 
 <details>
 <summary>答案</summary>

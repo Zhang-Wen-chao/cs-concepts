@@ -1,6 +1,7 @@
 # 阶段 3 · 工程化
 
-> 目标：掌握 Go Modules、测试/基准、HTTP 服务、配置与可观测性、部署流程，交付具备 CRUD + 观测能力的 Todo API（`playground/01_todo_api`）。
+> 目标：掌握 Go Modules、测试/基准、HTTP 服务、配置与可观测性、部署流程，交付具备 CRUD（Create Read Update Delete） + 观测能力的 Todo API（`playground/01_todo_api`）。
+
 
 ## 学习闭环
 | 步骤 | 资料 | 产出 |
@@ -17,7 +18,7 @@
 - [ ] Benchmark：`-bench`, `-benchmem`, `benchstat` 流程写进 `notes/02_testing_benchmark.md`。
 - [ ] HTTP：了解 middleware 链、context 取消、`http.Server` 生命周期，能写健康检查/metrics。
 - [ ] 配置与可观测性：flag + env + config file（如 `viper`）组合；日志/metrics/trace 接入路线清晰。
-- [ ] Todo API：CRUD + 状态过滤 + 分页；`httptest` 集成测试 + storage 层单测；覆盖率 ≥ 70%。
+- [ ] Todo API：CRUD（Create Read Update Delete） + 状态过滤 + 分页；`httptest` 集成测试 + storage 层单测；覆盖率 ≥ 70%。
 - [ ] Dockerfile + Makefile：支持 `make test`, `make run`, `docker build`, `docker run -p`.
 
 ## Playground 模块

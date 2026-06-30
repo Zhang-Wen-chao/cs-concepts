@@ -69,7 +69,7 @@ void foo() {}    // 定义
 
 ## Q5
 
-ODR（One Definition Rule）的核心规则是什么？
+ODR（One Definition Rule — 一次定义原则）的核心规则是什么？
 
 <details>
 <summary>答案</summary>

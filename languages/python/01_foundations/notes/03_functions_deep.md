@@ -74,7 +74,7 @@ print(vector_len(**params))       # 同上
 
 **顺序规则**：`def f(pos, *args, default=42, **kwargs):`
 
-## 作用域：LEGB 规则
+## 作用域：LEGB 规则（Local → Enclosing → Global → Built-in / 局部 → 闭包 → 全局 → 内置）
 
 Local → Enclosing → Global → Built-in
 
@@ -144,5 +144,5 @@ def make_counter_v2(start=0):
 | 参数传递 | 传对象引用，可变对象注意副作用 |
 | 默认参数 | 只在定义时计算一次，用 None 做哨兵 |
 | `*args`/`**kwargs` | 灵活的参数传递，解包符号 `*` `**` |
-| LEGB | Python 唯一的作用域规则，没有块级作用域 |
+| LEGB（Local → Enclosing → Global → Built-in） | Python 唯一的作用域规则，没有块级作用域 |
 | 闭包 | 捕获变量的函数 + `nonlocal` 才能修改捕获变量 |

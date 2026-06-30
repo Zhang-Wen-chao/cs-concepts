@@ -2,7 +2,7 @@
 
 ## Q1
 
-Go 的接口和 C++ 的抽象类 / Python 的 ABC 有什么区别？
+Go 的接口和 C++ 的抽象类 / Python 的 ABC（Abstract Base Class / 抽象基类）有什么区别？
 
 <details>
 <summary>答案</summary>
@@ -25,7 +25,7 @@ class MyWriter : public Writer { ... };  // 必须写 : public Writer
 
 ```python
 # Python — 显式注册
-class Writer(ABC):
+class Writer(ABC):  # ABC = Abstract Base Class
     @abstractmethod
     def write(self, data): ...
 class MyWriter(Writer): ...  # 必须继承 Writer
