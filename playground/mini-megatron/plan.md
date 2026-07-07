@@ -258,31 +258,48 @@ mini-megatron/
 同一批数据、相同配置下,多卡 loss 曲线必须与单卡完全重合。
 
 ```text
-Phase 1:   loss 10.93 → 10.92 → 10.91 → ...  (随机数据基线)
-Phase 2a:  loss 10.93 → 10.92 → 10.91 → ...  (数学等价)
-Phase 2b:  loss 10.93 → 10.92 → 10.91 → ...  (数学等价)
+Phase 1:   loss 5.46 → 5.45 → 5.44 → ...  (随机数据基线)
+Phase 2a:  loss 5.46 → 5.45 → 5.44 → ...  (数学等价)
 ```
 
 差值 > 1e-3 说明并行实现有 bug。
+> 注:使用随机数据不收敛,loss 在 ~5.46 附近波动属正常。
 
 ### 2. 吞吐量 (Throughput)
 
-| Phase | 配置 | tok/s | Scaling Efficiency | 说明 |
-|---|---|---|---|---|
-| 1 | 1 GPU | 49,687 | — | 基线,满算力 |
-| 2a | TP=2, 2 GPU | 50,027 | ~50% | 小模型 TP 通信开销大 |
-| 2b (DP) | DP=2, 2 GPU | 24,096 | ~24% | 容器缺 SHM,走 Socket 通信 |
-| 2c | TP=2 PP=2, 4 GPU | TBD | TBD | 待重建容器(需 shm-size) |
-| 3 | TP=2 PP=2 DP=2, 8 GPU | TBD | TBD | 待硬件就绪 |
+**tokens_per_step 计算规则:只有 DP(数据并行)增加 token 总数,TP/PP 拆分模型,不增加 token。**
 
-> 注:TP=2 对小模型(512hidden)效率低是预期行为。Megatron 官方建议 hidden_size >= 4096 时使用 TP。
-> DP 效率低是因为当前容器 /dev/shm 仅 64MB,NCCL 被迫走 Socket,重建容器即可解决。
+```
+tokens_per_step = micro_batch_size × seq_len × dp_world
+  dp_world = total_GPUs / (tp × pp)
+
+示例: TP=2 时 dp_world=1,2 张卡处理同一份数据
+      DP=2 时 dp_world=2,各处理不同数据
+```
+
+| Phase | 配置 | tok/s | Scaling Eff | 说明 |
+|---|---|---|---|---|
+| 1 | 1 GPU (TP=1 PP=1 DP=1) | **25,825** | — | 基线 |
+| 2a | TP=2 (2 GPU, DP=1) | **12,964** | ~25% | TP 通信开销 > 计算收益 |
+| DP | DP=2 (2 GPU, TP=1 PP=1) | **24,805** | ~48% | 缺 SHM,走 Socket |
+| 2b | TP=2 PP=2 (4 GPU) | TBD | TBD | 待重建容器 |
+| 3 | TP=2 PP=2 DP=2 (8 GPU) | TBD | TBD | 待硬件就绪 |
+
+> **TP=2 仅 12,964 tok/s**(单卡 25,825 的一半):512 hidden 太小,all-reduce 通信占主导。Megatron 官方建议 hidden ≥ 4096 才用 TP。
+> **DP=2 仅 24,805 tok/s**(接近单卡但略低):容器 /dev/shm 仅 64MB,被迫 `NCCL_SHM_DISABLE=1`,梯度同步走 Socket。重建容器即可解决。
 > Scaling Efficiency = 实际吞吐 / (GPU数 × 单卡吞吐)。
+
+### 3. MFU (Model FLOP Utilization)
 
 行业标准指标,衡量 GPU 算力利用率:
 
 ```
-MFU = 实际 FLOP/s ÷ GPU 峰值 FLOP/s
+MFU = (24 × L × h² × B × s × 4.5 + 6 × L × h × s × V) × dp_world × num_steps
+     ─────────────────────────────────────────────────────────────────
+     elapsed × total_GPUs × GPU_peak_FLOPS
+
+  L = num_layers, h = hidden_size, B = micro_batch_size, s = seq_len, V = vocab_size
+  GPU_peak = L20 FP16 ~96 TFLOPS
 ```
 
 - L20 FP16/TF32 峰值: ~96 TFLOPS

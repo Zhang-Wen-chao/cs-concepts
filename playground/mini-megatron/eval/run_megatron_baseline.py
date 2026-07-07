@@ -57,7 +57,7 @@ def build_model(tp, pp):
         tensor_model_parallel_size=tp,
         pipeline_model_parallel_size=pp,
         pipeline_model_parallel_comm_backend="nccl",
-        async_tensor_model_parallel_allreduce=True,
+        tp_comm_overlap=True,
     )
 
     pp_rank = parallel_state.get_pipeline_model_parallel_rank()
@@ -226,8 +226,8 @@ def main():
 
     # Report
     peak_mem = torch.cuda.max_memory_allocated() / 1024**3
-    gpu_count = total_world
-    tokens_per_step = B * S * gpu_count
+    dp_world = max(1, total_world // (tp * pp))
+    tokens_per_step = B * S * dp_world  # Only DP multiplies tokens (TP splits model, not data)
     total_tokens = tokens_per_step * total_steps
     throughput = total_tokens / elapsed
     mfu = compute_mfu(model, S, B, tp, pp, elapsed, total_steps)
@@ -236,7 +236,7 @@ def main():
         print(f"\n{'='*60}")
         print(f"Megatron-Core Baseline Results")
         print(f"{'='*60}")
-        print(f"Config:          TP={tp} PP={pp} ({gpu_count} GPU)")
+        print(f"Config:          TP={tp} PP={pp} ({total_world} GPU, DP={dp_world})")
         print(f"Model:           {MODEL_CONFIG['hidden_size']}hid {MODEL_CONFIG['num_layers']}lay {MODEL_CONFIG['num_attention_heads']}head")
         print(f"Micro batch:     {B}  |  Seq len: {S}  |  Steps: {total_steps}")
         print(f"{'-'*60}")
