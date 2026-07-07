@@ -27,22 +27,32 @@ def add_item(item, lst=[]):
     lst.append(item)
     return lst
 
-print(add_item(1))  # [1]
-print(add_item(2))  # [1, 2] — 不是 [2]！
-print(add_item(3))  # [1, 2, 3]
+print(add_item(1))  # 输出 [1]
+print(add_item(2))  # 输出 [1, 2]  ← ❌ 预期是 [2]，结果却是 [1, 2]
+print(add_item(3))  # 输出 [1, 2, 3]
 
-# 查看默认值
+# 为什么会这样？
+# def 是执行语句——定义时求值默认参数，创建了一个空 list []
+# 之后每次调用 add_item 不传 lst，用的都是同一个 list 对象
+# 第二次调用时 lst 已经是 [1] 了，再 append(2) 就变成 [1, 2]
+
+# 验证：三次调用共用了同一个 list
 print(add_item.__defaults__)  # ([1, 2, 3],)
 ```
 
 **原因**：默认参数在**函数定义时**计算一次，同一个 list 对象被所有调用共享。
 
 ```python
-# ✅ 正解：用 None 做哨兵
+# ✅ 正解：用 None 做哨兵，每次调用时创建新 list
 def add_item(item, lst=None):
-    lst = lst or []
+    if lst is None:
+        lst = []
     lst.append(item)
     return lst
+
+print(add_item(1))  # [1]
+print(add_item(2))  # [2]  ✅ 每次都是新 list
+print(add_item(3))  # [3]  ✅
 ```
 
 ## `*args` 和 `**kwargs`
