@@ -35,17 +35,17 @@ languages/
 │   ├── 02_concurrency/              笔记 + 自测 1 套
 │   ├── 03_engineering/              笔记 + 自测 1 套
 │   └── 04_projects/                 项目代码
-└── python/                 ← Python 4 阶段
-    ├── 01_foundations/              笔记 6 篇 + 自测 1 套
-    ├── 02_intermediate/             笔记 5 篇
-    ├── 03_engineering/              笔记 4 篇（待确认）
-    └── 04_projects/                 待定
+└── python/                 ← Python 4 阶段 ✅
+    ├── 01_foundations/              笔记 6 篇 + 自测 1 套 + playground
+    ├── 02_intermediate/             笔记 7 篇 + playground（含 async）
+    ├── 03_engineering/              笔记 4 篇 + playground
+    └── 04_projects/                 日志分析 CLI + API 服务（14 测试）
 ```
 
 ## 🧭 当前进度
 
 | 语言 | 当前阶段 | 路径 |
-|---|---|---|
+|---|---|---|---|
 | → C++ | Stage 1 ⬅️ **正在学** | `cpp/README.md` |
 | → Go | 阶段 2 并发 / 已有内容复习 | `go/README.md` |
-| → Python | 02_intermediate 笔记就绪 | `python/README.md` |
+| → Python | 02_intermediate + 04_projects ✅ | `python/README.md` |
