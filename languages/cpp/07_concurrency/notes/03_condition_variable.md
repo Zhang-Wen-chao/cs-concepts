@@ -1,4 +1,5 @@
 # 条件变量、wait/notify_one/notify_all、生产者消费者
+> For a detailed walkthrough with more examples, see `_supplementary/03_condition_variable.md`
 
 ## 1. 条件变量解决的问题
 

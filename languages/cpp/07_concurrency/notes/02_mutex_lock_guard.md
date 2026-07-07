@@ -1,4 +1,5 @@
 # std::mutex、lock_guard、unique_lock、scoped_lock
+> For a detailed walkthrough with more examples, see `_supplementary/02_mutex_locks.md`
 
 ## 1. 数据竞争与互斥锁
 

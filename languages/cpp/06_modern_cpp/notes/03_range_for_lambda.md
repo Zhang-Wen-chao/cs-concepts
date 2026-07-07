@@ -1,5 +1,7 @@
 # 范围 for 循环、lambda 表达式
 
+> For a lambda-only deep dive with more examples, see `_supplementary/05_lambda.md`
+
 ## 1. 范围 for 循环
 
 C++11 引入类似 Python 的 `for x in list` 语法：

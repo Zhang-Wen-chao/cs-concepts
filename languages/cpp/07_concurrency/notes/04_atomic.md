@@ -1,4 +1,5 @@
 # std::atomic、load/store、fetch_add、CAS、memory_order
+> For a detailed walkthrough with more examples, see `_supplementary/04_atomic.md`
 
 ## 1. 为什么需要原子操作
 

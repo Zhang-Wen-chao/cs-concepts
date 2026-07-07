@@ -1,4 +1,5 @@
 # std::thread 基础、join/detach、jthread（C++20）
+> For a detailed walkthrough with more examples, see `_supplementary/01_thread_basics.md`
 
 ## 1. std::thread — 开启新线程
 

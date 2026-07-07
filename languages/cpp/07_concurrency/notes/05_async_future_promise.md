@@ -1,4 +1,5 @@
 # std::async、future/promise、packaged_task
+> For a detailed walkthrough with more examples, see `_supplementary/05_async_future.md`
 
 ## 1. std::async — 异步任务的最简单方式
 
