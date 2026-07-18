@@ -58,7 +58,18 @@
 面向大规模通用模型的系统化训练与部署
 
 **理论文档：**
+- [Attention 机制](foundation-models/attention.md) — QKV、Scaled Dot-Product、Multi-Head
+- [Transformer 架构](foundation-models/transformer.md) — Decoder-only 结构、残差连接、RoPE
 - [高效训练与部署多模态大模型（<1k卡）](foundation-models/efficient-multimodal-llm-training.md) - 在受限资源下构建具备竞争力的多模态/图像大模型训练与推理体系
+
+---
+
+### [训练推理优化 (Training & Inference)](training-inference/)
+大模型训练和推理的并行策略与优化
+
+**理论文档：**
+- [TP/DP/PP 并行策略](training-inference/README.md) — 三种并行的原理和对比
+- [Checkpoint Reshard 原理](training-inference/01-distributed-reshard.md) — ShardedTensor 如何实现拓扑切换
 
 ---
 
@@ -78,9 +89,19 @@ python 01_linear_regression.py
 
 ### 学习路径
 
-1. **机器学习基础** → [machine-learning/practices/](machine-learning/practices/)
-2. **深度学习基础** → [deep-learning/practices/](deep-learning/practices/)
-3. **推荐系统** → [recommendation-systems/practices/](recommendation-systems/practices/)
+```
+机器学习基础    →    深度学习     →    Transformer    →    分布式训练
+  什么是模型         感知机/MLP       Attention           TP/DP/PP
+  损失/梯度          反向传播          Decoder             reshard
+  监督/无监督        CNN/RNN          位置编码            ShardedTensor
+```
+
+按顺序：
+1. **机器学习基础** → [machine-learning/01-what-is-ml.md](machine-learning/01-what-is-ml.md)
+2. **深度学习** → [deep-learning/01-neural-networks.md](deep-learning/01-neural-networks.md)
+3. **Transformer** → [foundation-models/transformer.md](foundation-models/transformer.md)
+4. **分布式训练** → [training-inference/01-distributed-reshard.md](training-inference/01-distributed-reshard.md)
+5. **推荐系统** → [recommendation-systems/practices/](recommendation-systems/practices/)
 
 ---
 
