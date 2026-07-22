@@ -52,6 +52,13 @@ Megatron 实验（实际在做的事）
 
 ---
 
+## 未来关注
+
+- **股票/时序预测用 Transformer** — Informer、Autoformer、PatchTST、LLM 微调
+- **多模态统一架构** — 文本/图像/音频全部拆成 token，进同一套 Transformer
+
+---
+
 ## 注意事项
 
 - 先学透当前层，再往下走
