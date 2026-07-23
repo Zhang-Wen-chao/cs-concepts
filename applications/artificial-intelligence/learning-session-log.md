@@ -45,10 +45,12 @@ Megatron 实验（实际在做的事）
 | 损失函数（MSE、交叉熵） | ✅ | 02-linear-models |
 | 梯度下降 | ✅ | 03-training |
 | 神经网络（隐藏层、激活函数） | ✅ | deep-learning/01-neural-networks |
-| 反向传播（链式法则） | 🔄 学习中 | deep-learning/02-backprop |
-| TP/DP/PP | ❌ 待学 | training-inference/ |
-| ShardedTensor | ❌ 待学 | training-inference/01-distributed-reshard |
-| Transformer 权重矩阵 | ❌ 待学 | foundation-models/transformer |
+| 反向传播（链式法则） | ✅ | deep-learning/02-backprop |
+| CNN/RNN/Transformer 对比 | ✅ | deep-learning/03-architectures |
+| Attention（QKV、加权） | ✅ | foundation-models/attention |
+| Transformer 完整架构（残差、RoPE、FFN） | ✅ | foundation-models/transformer |
+| TP/DP/PP | ❌ 下一个 | training-inference/ |
+| ShardedTensor | ❌ 下一个 | training-inference/01-distributed-reshard |
 
 ---
 

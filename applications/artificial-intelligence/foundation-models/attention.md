@@ -20,19 +20,46 @@ Attention 就是让每个 token 扮演这三个角色。
 
 ---
 
-## Scaled Dot-Product Attention
+## 权重在哪里
 
-### 输入
+很多人第一次看到公式 `Attention(Q, K, V) = softmax(Q @ Kᵀ / √d_k) @ V` 会困惑：权重在哪？
 
-Q、K、V 三个矩阵，每行是一个 token 的向量：
+**完整的计算图（含权重）：**
 
 ```
-Q: [seq_len, d_k]    → 每个 token 的查询
-K: [seq_len, d_k]    → 每个 token 的键
-V: [seq_len, d_v]    → 每个 token 的值
+                       X (上一层的输出)
+          ┌─────────────┼─────────────┐
+          ↓             ↓             ↓
+       [@ W_q]       [@ W_k]       [@ W_v]    ← W_q, W_k, W_v 才是可训练的参数
+          ↓             ↓             ↓
+          Q             K             V
+          └─────────┬──┘             │
+                    ↓                │
+              Q @ Kᵀ ÷ √d_k          │
+                    ↓                │
+               softmax              │
+                    ↓                │
+               [权重矩阵]            │
+                    └────── @ V ─────┘
+                              ↓
+                            输出
 ```
 
-### 计算
+**Q、K、V 是 X 乘以权重矩阵算出来的值**（相当于隐藏层的输出值，不是权重本身）。
+
+```
+X (上一层的输出, 形状 [seq_len, d])
+
+Q = X @ W_q   形状 [seq_len, d_k]
+K = X @ W_k   形状 [seq_len, d_k]
+V = X @ W_v   形状 [seq_len, d_v]
+```
+
+W_q、W_k、W_v 跟卷积核、线性层的 W 一样——**随机初始化，反向传播更新**。
+
+注意 Q 和 K 不是凭空产生的，也不是自己去哪里取回来的——就是 X 分别跟三个不同矩阵做乘法，投影到三个不同空间去干不同的活。
+
+### Attention 计算
 
 ```
 Attention(Q, K, V) = softmax(Q @ Kᵀ / √d_k) @ V
@@ -42,7 +69,7 @@ Attention(Q, K, V) = softmax(Q @ Kᵀ / √d_k) @ V
 
 ```
 1. Q @ Kᵀ          → 相似度矩阵 [seq_len, seq_len]
-                      位置 (i,j) 表示 token i 对 token j 的关注度
+                       位置 (i,j) 表示 token i 对 token j 的关注度
 
 2. softmax( / √d_k) → 归一化成概率（每行和为 1）
 
@@ -72,14 +99,14 @@ V → [头1, 头2, ..., 头h]
 
 ---
 
-## Self-Attention vs Cross-Attention
+## Self-Attention vs Cross-Attention（了解即可）
 
 | | Q 来自 | K/V 来自 | 用在哪 |
 |---|---|---|---|
-| Self-Attention | 自己 | 自己 | Transformer 的每一层 |
-| Cross-Attention | 解码器 | 编码器 | Encoder-Decoder 结构 |
+| Self-Attention | 自己 | 自己 | GPT 的每一层（你在学的） |
+| Cross-Attention | 解码器 | 编码器 | 翻译模型（Encoder-Decoder） |
 
-GPT 只用 Self-Attention。
+**GPT 只用 Self-Attention，没有 Cross-Attention。** Cross-Attention 是翻译模型里解码器回头去看源语言用的，跟你的 Megatron 实验无关。可跳过。
 
 ---
 
